@@ -1,0 +1,932 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CareerPath | Career Roadmaps</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #fff5f6;
+            color: #222;
+        }
+
+        header {
+            background: #d90429;
+            color: white;
+            padding: 20px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        header h1 {
+            font-size: 25px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            background: white;
+            color: #d90429;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .hero h2 {
+            color: #d90429;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: #555;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin: 25px 0;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .primary-btn {
+            background: #d90429;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #a90320;
+        }
+
+        .ai-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px #00000012;
+            margin-bottom: 30px;
+        }
+
+        .ai-box h3 {
+            color: #d90429;
+            margin-bottom: 10px;
+        }
+
+        .ai-box p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .category-buttons button {
+            background: white;
+            color: #d90429;
+            border: 1px solid #d90429;
+        }
+
+        .category-buttons button:hover {
+            background: #d90429;
+            color: white;
+        }
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .career-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px #00000010;
+            transition: 0.2s;
+        }
+
+        .career-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .career-card h3 {
+            color: #d90429;
+            margin-bottom: 10px;
+        }
+
+        .career-card p {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .generate-btn {
+            background: #d90429;
+            color: white;
+            width: 100%;
+        }
+
+        .result-section {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px #00000012;
+            margin-top: 30px;
+        }
+
+        .result-section h2 {
+            color: #d90429;
+            margin-bottom: 12px;
+        }
+
+        .result-section h3 {
+            color: #d90429;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        .result-section p {
+            line-height: 1.7;
+            color: #444;
+        }
+
+        .result-section ul {
+            padding-left: 25px;
+            line-height: 1.8;
+        }
+
+        .stage {
+            border-left: 5px solid #d90429;
+            background: #fff5f6;
+            padding: 20px;
+            margin: 18px 0;
+            border-radius: 8px;
+        }
+
+        .stage h4 {
+            color: #d90429;
+            margin-bottom: 8px;
+        }
+
+        .project {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .save-btn {
+            background: #16803c;
+            color: white;
+            margin-top: 25px;
+        }
+
+        .save-btn:disabled {
+            background: #777;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .loading {
+            color: #d90429;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .hero h2 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>CareerPath</h1>
+    <a href="../frontend/index.html">Dashboard</a>
+</header>
+
+<div class="container">
+
+    <section class="hero">
+        <h2>Explore Your Career Roadmap</h2>
+        <p>Discover career paths, learn new skills and prepare for internships.</p>
+    </section>
+
+    <section class="ai-box">
+        <h3>🤖 AI Roadmap Generator</h3>
+
+        <p>
+            Enter any career or course to generate a personalized learning roadmap.
+        </p>
+
+        <div class="search-box">
+            <input
+                type="text"
+                id="courseInput"
+                placeholder="Example: Python, Content Writing, Cybersecurity..."
+            >
+
+            <button class="primary-btn" id="generateAIButton">
+                Generate
+            </button>
+        </div>
+
+        <div id="loadingMessage" class="loading"></div>
+        <div id="errorMessage" class="message"></div>
+    </section>
+
+    <div class="category-buttons">
+        <button data-category="All">All</button>
+        <button data-category="Technology">Technology</button>
+        <button data-category="Cybersecurity">Cybersecurity</button>
+        <button data-category="Data">Data & AI</button>
+        <button data-category="Design">Design</button>
+        <button data-category="Business">Business</button>
+        <button data-category="Engineering">Engineering</button>
+    </div>
+
+    <section>
+        <h2 style="margin-bottom:20px;">Popular Career Roadmaps</h2>
+
+        <div class="roadmap-grid" id="careerGrid"></div>
+    </section>
+
+    <section class="result-section" id="resultSection">
+
+        <h2 id="roadmapTitle"></h2>
+
+        <p id="roadmapOverview"></p>
+
+        <h3>Prerequisites</h3>
+        <ul id="prerequisitesList"></ul>
+
+        <h3>Learning Stages</h3>
+        <div id="stagesContainer"></div>
+
+        <h3>Internship Preparation</h3>
+        <ul id="internshipList"></ul>
+
+        <h3>Career Options</h3>
+        <ul id="careerOptionsList"></ul>
+
+        <h3>Important Note</h3>
+        <p id="importantNote"></p>
+
+        <button class="save-btn" id="saveRoadmapButton">
+            Save This Roadmap
+        </button>
+
+        <div class="message" id="saveMessage"></div>
+
+    </section>
+
+</div>
+
+<script type="module">
+
+    import { auth, db }
+        from "../frontend/firebase-config.js";
+
+    import {
+        onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    import {
+        collection,
+        addDoc,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+    const careerGrid = document.getElementById("careerGrid");
+
+    const courseInput = document.getElementById("courseInput");
+
+    const generateAIButton =
+        document.getElementById("generateAIButton");
+
+    const loadingMessage =
+        document.getElementById("loadingMessage");
+
+    const errorMessage =
+        document.getElementById("errorMessage");
+
+    const resultSection =
+        document.getElementById("resultSection");
+
+    const saveRoadmapButton =
+        document.getElementById("saveRoadmapButton");
+
+    const saveMessage =
+        document.getElementById("saveMessage");
+
+
+    let currentUser = null;
+    let currentRoadmap = null;
+
+
+    // Check Firebase login status
+    onAuthStateChanged(auth, (user) => {
+
+        if (user) {
+            currentUser = user;
+
+            console.log("Logged in user:", user.email);
+
+        } else {
+            currentUser = null;
+
+            console.log("No user logged in.");
+        }
+
+    });
+
+
+    // Career catalog
+    const careers = [
+
+        {
+            title: "Full Stack Developer",
+            category: "Technology",
+            description: "Learn frontend, backend and database development."
+        },
+
+        {
+            title: "Frontend Developer",
+            category: "Technology",
+            description: "Learn HTML, CSS, JavaScript and modern frontend tools."
+        },
+
+        {
+            title: "Backend Developer",
+            category: "Technology",
+            description: "Learn servers, APIs, databases and backend programming."
+        },
+
+        {
+            title: "Mobile App Developer",
+            category: "Technology",
+            description: "Learn to create Android and cross-platform applications."
+        },
+
+        {
+            title: "Python Developer",
+            category: "Technology",
+            description: "Learn Python programming and application development."
+        },
+
+        {
+            title: "Cybersecurity Analyst",
+            category: "Cybersecurity",
+            description: "Learn security fundamentals, networking and monitoring."
+        },
+
+        {
+            title: "Ethical Hacker",
+            category: "Cybersecurity",
+            description: "Learn ethical hacking, Linux and penetration testing."
+        },
+
+        {
+            title: "Cloud Security Engineer",
+            category: "Cybersecurity",
+            description: "Learn cloud platforms and cloud security practices."
+        },
+
+        {
+            title: "Data Analyst",
+            category: "Data",
+            description: "Learn Excel, SQL, statistics and data visualization."
+        },
+
+        {
+            title: "Data Scientist",
+            category: "Data",
+            description: "Learn Python, statistics, machine learning and analysis."
+        },
+
+        {
+            title: "Machine Learning Engineer",
+            category: "Data",
+            description: "Learn machine learning models and deployment."
+        },
+
+        {
+            title: "Artificial Intelligence Engineer",
+            category: "Data",
+            description: "Learn AI concepts, Python and intelligent applications."
+        },
+
+        {
+            title: "UI/UX Designer",
+            category: "Design",
+            description: "Learn user research, wireframes and interface design."
+        },
+
+        {
+            title: "Graphic Designer",
+            category: "Design",
+            description: "Learn visual design, branding and design tools."
+        },
+
+        {
+            title: "Digital Marketing Specialist",
+            category: "Business",
+            description: "Learn SEO, social media and digital marketing."
+        },
+
+        {
+            title: "Business Analyst",
+            category: "Business",
+            description: "Learn business analysis, documentation and data skills."
+        },
+
+        {
+            title: "Mechanical Engineer",
+            category: "Engineering",
+            description: "Explore mechanical engineering skills and career paths."
+        },
+
+        {
+            title: "Civil Engineer",
+            category: "Engineering",
+            description: "Explore civil engineering tools and career opportunities."
+        },
+
+        {
+            title: "Electrical Engineer",
+            category: "Engineering",
+            description: "Learn electrical engineering fundamentals and tools."
+        },
+
+        {
+            title: "Electronics Engineer",
+            category: "Engineering",
+            description: "Learn electronics, circuits and embedded systems."
+        }
+
+    ];
+
+
+    // Display career cards
+    function displayCareers(category = "All") {
+
+        careerGrid.innerHTML = "";
+
+        const filteredCareers = careers.filter((career) => {
+
+            return category === "All" ||
+                career.category === category;
+
+        });
+
+        filteredCareers.forEach((career) => {
+
+            const card = document.createElement("div");
+
+            card.className = "career-card";
+
+            card.innerHTML = `
+
+                <h3>${escapeHTML(career.title)}</h3>
+
+                <p>${escapeHTML(career.description)}</p>
+
+                <button class="generate-btn">
+                    Create Roadmap
+                </button>
+
+            `;
+
+            const button = card.querySelector("button");
+
+            button.addEventListener("click", () => {
+
+                courseInput.value = career.title;
+
+                generateRoadmap(career.title);
+
+            });
+
+            careerGrid.appendChild(card);
+
+        });
+
+    }
+
+
+    // Category buttons
+    document.querySelectorAll("[data-category]").forEach((button) => {
+
+        button.addEventListener("click", () => {
+
+            displayCareers(button.dataset.category);
+
+        });
+
+    });
+
+
+    // Escape HTML
+    function escapeHTML(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+    }
+
+
+    // Generate AI roadmap
+    generateAIButton.addEventListener("click", () => {
+
+        const course = courseInput.value.trim();
+
+        if (!course) {
+
+            errorMessage.textContent =
+                "Please enter a career or course name.";
+
+            return;
+
+        }
+
+        generateRoadmap(course);
+
+    });
+
+
+    async function generateRoadmap(course) {
+
+        loadingMessage.textContent =
+            "Generating your roadmap. Please wait...";
+
+        errorMessage.textContent = "";
+
+        saveMessage.textContent = "";
+
+        resultSection.style.display = "none";
+
+        generateAIButton.disabled = true;
+
+        try {
+
+            const response = await fetch(
+                "http://localhost:5000/api/generate-roadmap",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        course: course
+                    })
+
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+
+                throw new Error(
+                    data.error || "Unable to generate roadmap."
+                );
+
+            }
+
+            currentRoadmap = data.roadmap;
+
+            displayRoadmap(currentRoadmap);
+
+        } catch (error) {
+
+            console.error(error);
+
+            errorMessage.textContent =
+                error.message ||
+                "Something went wrong. Please try again.";
+
+        } finally {
+
+            loadingMessage.textContent = "";
+
+            generateAIButton.disabled = false;
+
+        }
+
+    }
+
+
+    // Display roadmap
+    function displayRoadmap(roadmap) {
+
+        resultSection.style.display = "block";
+
+        document.getElementById("roadmapTitle").textContent =
+            roadmap.title || "Career Roadmap";
+
+        document.getElementById("roadmapOverview").textContent =
+            roadmap.overview || "No overview available.";
+
+        const prerequisitesList =
+            document.getElementById("prerequisitesList");
+
+        prerequisitesList.innerHTML = "";
+
+        (roadmap.prerequisites || []).forEach((item) => {
+
+            const li = document.createElement("li");
+
+            li.textContent = item;
+
+            prerequisitesList.appendChild(li);
+
+        });
+
+
+        const stagesContainer =
+            document.getElementById("stagesContainer");
+
+        stagesContainer.innerHTML = "";
+
+        (roadmap.stages || []).forEach((stage, index) => {
+
+            const stageDiv = document.createElement("div");
+
+            stageDiv.className = "stage";
+
+            let skillsHTML = "";
+
+            (stage.skills || []).forEach((skill) => {
+
+                skillsHTML += `<li>${escapeHTML(skill)}</li>`;
+
+            });
+
+
+            let toolsHTML = "";
+
+            (stage.tools || []).forEach((tool) => {
+
+                toolsHTML += `<li>${escapeHTML(tool)}</li>`;
+
+            });
+
+
+            let projectsHTML = "";
+
+            (stage.projects || []).forEach((project) => {
+
+                projectsHTML += `
+
+                    <div class="project">
+
+                        <strong>
+                            ${escapeHTML(project.title)}
+                        </strong>
+
+                        <p>
+                            ${escapeHTML(project.description)}
+                        </p>
+
+                    </div>
+
+                `;
+
+            });
+
+
+            stageDiv.innerHTML = `
+
+                <h4>
+                    Stage ${escapeHTML(stage.number || index + 1)}:
+                    ${escapeHTML(stage.title)}
+                </h4>
+
+                <p>
+                    <strong>Duration:</strong>
+                    ${escapeHTML(stage.duration)}
+                </p>
+
+                <p>
+                    ${escapeHTML(stage.description)}
+                </p>
+
+                <h4>Skills</h4>
+
+                <ul>
+                    ${skillsHTML}
+                </ul>
+
+                <h4>Tools</h4>
+
+                <ul>
+                    ${toolsHTML}
+                </ul>
+
+                <h4>Projects</h4>
+
+                ${projectsHTML}
+
+            `;
+
+            stagesContainer.appendChild(stageDiv);
+
+        });
+
+
+        displayList(
+            "internshipList",
+            roadmap.internshipPreparation
+        );
+
+        displayList(
+            "careerOptionsList",
+            roadmap.careerOptions
+        );
+
+        document.getElementById("importantNote").textContent =
+            roadmap.importantNote ||
+            "Learning time and employment outcomes can vary.";
+
+        saveRoadmapButton.disabled = false;
+
+        saveRoadmapButton.textContent =
+            "Save This Roadmap";
+
+        resultSection.scrollIntoView({
+            behavior: "smooth"
+        });
+
+    }
+
+
+    // Display list
+    function displayList(elementId, items = []) {
+
+        const element = document.getElementById(elementId);
+
+        element.innerHTML = "";
+
+        items.forEach((item) => {
+
+            const li = document.createElement("li");
+
+            li.textContent = item;
+
+            element.appendChild(li);
+
+        });
+
+    }
+
+
+    // Save roadmap to Firestore
+    saveRoadmapButton.addEventListener("click", async () => {
+
+        saveMessage.textContent = "";
+
+        if (!currentUser) {
+
+            saveMessage.textContent =
+                "Please log in before saving a roadmap.";
+
+            return;
+
+        }
+
+        if (!currentRoadmap) {
+
+            saveMessage.textContent =
+                "Please generate a roadmap first.";
+
+            return;
+
+        }
+
+        saveRoadmapButton.disabled = true;
+
+        saveRoadmapButton.textContent = "Saving...";
+
+        try {
+
+            const roadmapsCollection = collection(
+                db,
+                "users",
+                currentUser.uid,
+                "roadmaps"
+            );
+
+
+            await addDoc(roadmapsCollection, {
+
+                title: currentRoadmap.title ||
+                    "Untitled Roadmap",
+
+                roadmap: currentRoadmap,
+
+                savedAt: serverTimestamp(),
+
+                userId: currentUser.uid
+
+            });
+
+
+            saveMessage.textContent =
+                "✅ Roadmap saved successfully to your account!";
+
+            saveRoadmapButton.textContent =
+                "Roadmap Saved";
+
+        } catch (error) {
+
+            console.error("Firestore save error:", error);
+
+            saveMessage.textContent =
+                "Unable to save roadmap. Please try again.";
+
+            saveRoadmapButton.disabled = false;
+
+            saveRoadmapButton.textContent =
+                "Save This Roadmap";
+
+        }
+
+    });
+
+
+    // Show careers when page loads
+    displayCareers("All");
+
+</script>
+
+</body>
+</html>

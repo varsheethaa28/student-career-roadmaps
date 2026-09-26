@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>CareerPath | Dashboard</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #fff5f6;
+      color: #333;
+    }
+
+    header {
+      background: #d90429;
+      color: white;
+      padding: 18px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .logout-button {
+      background: white;
+      color: #d90429;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 86%;
+      max-width: 1200px;
+      margin: 35px auto;
+    }
+
+    .welcome-section {
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+      margin-bottom: 25px;
+    }
+
+    .welcome-section h1 {
+      color: #d90429;
+      margin-bottom: 10px;
+      font-size: 30px;
+    }
+
+    .welcome-section p {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .primary-button,
+    .secondary-button {
+      display: inline-block;
+      text-decoration: none;
+      padding: 13px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .primary-button {
+      background: #d90429;
+      color: white;
+    }
+
+    .primary-button:hover {
+      background: #a80320;
+    }
+
+    .secondary-button {
+      background: #ffe0e5;
+      color: #d90429;
+    }
+
+    .secondary-button:hover {
+      background: #ffc5ce;
+    }
+
+    .section-title {
+      margin: 30px 0 18px;
+      color: #333;
+      font-size: 24px;
+    }
+
+    .saved-roadmaps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .roadmap-card {
+      background: white;
+      padding: 22px;
+      border-radius: 16px;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .roadmap-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .roadmap-card h3 {
+      color: #d90429;
+      margin-bottom: 10px;
+    }
+
+    .roadmap-card p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .roadmap-card small {
+      display: block;
+      margin-top: 15px;
+      color: #999;
+    }
+
+    .empty-message {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      color: #666;
+      text-align: center;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .loading {
+      color: #d90429;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      margin-top: 50px;
+      background: #d90429;
+      color: white;
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 18px 5%;
+      }
+
+      nav {
+        gap: 10px;
+      }
+
+      .container {
+        width: 92%;
+      }
+
+      .welcome-section h1 {
+        font-size: 25px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .primary-button,
+      .secondary-button {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">CareerPath</div>
+
+    <nav>
+      <a href="../frontend/index.html">Home</a>
+      <a href="roadmap.html">Roadmaps</a>
+      <a href="internships.html">Internships</a>
+      <a href="profile.html">Profile</a>
+      <button class="logout-button" id="logoutButton">Logout</button>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+
+    <!-- Welcome Section -->
+    <section class="welcome-section">
+      <h1 id="welcomeTitle">Welcome to CareerPath 🎯</h1>
+
+      <p>
+        Discover career opportunities, create learning roadmaps,
+        find internships, and build your future step by step.
+      </p>
+
+      <p id="userEmail" class="loading">
+        Loading your account...
+      </p>
+
+      <!-- Dashboard Action Buttons -->
+      <div class="action-buttons">
+
+        <a href="roadmap.html" class="primary-button">
+          🚀 Explore Roadmaps
+        </a>
+
+        <a href="internships.html" class="secondary-button">
+          💼 Find Internships
+        </a>
+
+        <a href="saved-internships.html" class="primary-button">
+          📋 My Saved Internships
+        </a>
+
+        <a href="profile.html" class="secondary-button">
+          👤 My Profile
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Saved Roadmaps Section -->
+    <h2 class="section-title">📚 My Saved Roadmaps</h2>
+
+    <div id="loadingRoadmaps" class="loading">
+      Loading saved roadmaps...
+    </div>
+
+    <div id="savedRoadmaps" class="saved-roadmaps"></div>
+
+    <div id="emptyMessage" class="empty-message" style="display: none;">
+      <p>You have not saved any roadmaps yet.</p>
+
+      <br />
+
+      <a href="roadmap.html" class="primary-button">
+        Explore Roadmaps
+      </a>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 CareerPath. Build your future, one step at a time.</p>
+  </footer>
+
+
+  <!-- Firebase Script -->
+  <script type="module">
+
+    import {
+      auth,
+      db
+    } from "../frontend/firebase-config.js";
+
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    import {
+      collection,
+      getDocs,
+      query,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+    const welcomeTitle = document.getElementById("welcomeTitle");
+    const userEmail = document.getElementById("userEmail");
+    const logoutButton = document.getElementById("logoutButton");
+
+    const savedRoadmaps = document.getElementById("savedRoadmaps");
+    const loadingRoadmaps = document.getElementById("loadingRoadmaps");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+
+    // Logout
+    logoutButton.addEventListener("click", async () => {
+
+      try {
+
+        await signOut(auth);
+
+        window.location.href = "login.html";
+
+      } catch (error) {
+
+        console.error("Logout error:", error);
+        alert("Unable to logout. Please try again.");
+
+      }
+
+    });
+
+
+    // Escape HTML for security
+    function escapeHTML(value) {
+
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    // Load saved roadmaps
+    async function loadSavedRoadmaps(user) {
+
+      loadingRoadmaps.style.display = "block";
+      emptyMessage.style.display = "none";
+      savedRoadmaps.innerHTML = "";
+
+      try {
+
+        const roadmapsCollection = collection(
+          db,
+          "users",
+          user.uid,
+          "roadmaps"
+        );
+
+        let snapshot;
+
+        try {
+
+          const sortedQuery = query(
+            roadmapsCollection,
+            orderBy("savedAt", "desc")
+          );
+
+          snapshot = await getDocs(sortedQuery);
+
+        } catch (error) {
+
+          console.warn(
+            "Sorting failed. Loading roadmaps without sorting.",
+            error
+          );
+
+          snapshot = await getDocs(roadmapsCollection);
+
+        }
+
+        loadingRoadmaps.style.display = "none";
+
+        if (snapshot.empty) {
+
+          emptyMessage.style.display = "block";
+          return;
+
+        }
+
+        snapshot.forEach((documentSnapshot) => {
+
+          const roadmapData = documentSnapshot.data();
+
+          const roadmap = roadmapData.roadmap || {};
+
+          const title =
+            roadmapData.title ||
+            roadmap.title ||
+            "Untitled Roadmap";
+
+          const overview =
+            roadmap.overview ||
+            "Explore this saved career roadmap and continue your learning journey.";
+
+          const roadmapId = documentSnapshot.id;
+
+          const card = document.createElement("div");
+
+          card.className = "roadmap-card";
+
+          card.innerHTML = `
+            <h3>${escapeHTML(title)}</h3>
+
+            <p>${escapeHTML(overview)}</p>
+
+            <small>
+              Click to view your saved roadmap →
+            </small>
+          `;
+
+          card.addEventListener("click", () => {
+
+            window.location.href =
+              "saved-roadmap.html?id=" +
+              encodeURIComponent(roadmapId);
+
+          });
+
+          savedRoadmaps.appendChild(card);
+
+        });
+
+      } catch (error) {
+
+        console.error("Error loading saved roadmaps:", error);
+
+        loadingRoadmaps.style.display = "none";
+
+        savedRoadmaps.innerHTML = `
+          <div class="empty-message">
+            <p>
+              Unable to load saved roadmaps.
+              Please check your internet connection and try again.
+            </p>
+          </div>
+        `;
+
+      }
+
+    }
+
+
+    // Check logged-in user
+    onAuthStateChanged(auth, async (user) => {
+
+      if (!user) {
+
+        window.location.href = "login.html";
+        return;
+
+      }
+
+      welcomeTitle.textContent =
+        "Welcome to CareerPath 🎯";
+
+      userEmail.textContent =
+        "Logged in as: " + (user.email || "CareerPath User");
+
+      await loadSavedRoadmaps(user);
+
+    });
+
+  </script>
+
+</body>
+</html>

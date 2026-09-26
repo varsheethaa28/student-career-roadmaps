@@ -1,0 +1,926 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CareerPath | Discover Your Career</title>
+
+    <style>
+
+        /* =========================
+           GENERAL STYLES
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #14213d;
+            background: #fff5f7;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            height: 82px;
+            padding: 0 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+
+            background: white;
+            border-bottom: 1px solid #f1e4e8;
+        }
+
+        .logo {
+            font-size: 31px;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            white-space: nowrap;
+        }
+
+        .logo-dark {
+            color: #14213d;
+        }
+
+        .logo-red {
+            color: #ef233c;
+        }
+
+        .navigation {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navigation a {
+            color: #34415b;
+            font-size: 16px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .navigation a:hover {
+            color: #ef233c;
+        }
+
+        .header-button {
+            background: #ffe7ec;
+            color: #d90429;
+            padding: 11px 18px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+
+        /* =========================
+           MAIN LAYOUT
+        ========================= */
+
+        .main {
+            width: 88%;
+            max-width: 1450px;
+            min-height: calc(100vh - 82px);
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: 1.1fr 0.75fr;
+            align-items: center;
+            gap: 65px;
+
+            padding: 55px 0;
+        }
+
+
+        /* =========================
+           HERO SECTION
+        ========================= */
+
+        .hero {
+            padding-top: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #ffe3e9;
+            color: #d90429;
+            padding: 11px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .hero h1 {
+            font-size: clamp(48px, 5.5vw, 86px);
+            line-height: 1;
+            letter-spacing: -4px;
+            margin-bottom: 25px;
+        }
+
+        .hero h1 span {
+            display: block;
+            color: #ef233c;
+            margin-top: 10px;
+        }
+
+        .hero-description {
+            max-width: 590px;
+            color: #46536d;
+            font-size: 19px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+
+        /* =========================
+           FEATURE CARDS
+        ========================= */
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 620px;
+            margin-bottom: 35px;
+        }
+
+        .feature {
+            text-align: center;
+            color: #34415b;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .feature-icon {
+            width: 55px;
+            height: 55px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            margin: 0 auto 10px;
+
+            background: #ffe5eb;
+            border-radius: 50%;
+
+            color: #ef233c;
+            font-size: 24px;
+        }
+
+
+        /* =========================
+           CREATIVE ILLUSTRATION
+        ========================= */
+
+        .illustration {
+            position: relative;
+            width: 100%;
+            max-width: 620px;
+            min-height: 180px;
+            margin: auto;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .illustration-background {
+            position: absolute;
+            width: 85%;
+            height: 175px;
+            bottom: 0;
+
+            background: #ffd9e1;
+            border-radius: 50% 50% 20px 20px;
+        }
+
+        .illustration-content {
+            position: relative;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .illustration-content .emoji {
+            font-size: 90px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .illustration-content p {
+            color: #d90429;
+            font-weight: 900;
+            font-size: 20px;
+            font-style: italic;
+            transform: rotate(-4deg);
+        }
+
+
+        /* =========================
+           LOGIN CARD
+        ========================= */
+
+        .login-card {
+            background: white;
+            border: 1px solid #f1dfe4;
+            border-radius: 25px;
+            padding: 40px;
+
+            box-shadow: 0 25px 65px rgba(180, 30, 65, 0.13);
+        }
+
+        .welcome {
+            color: #ef233c;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .red-line {
+            width: 55px;
+            height: 4px;
+            background: #ef233c;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .login-card h2 {
+            font-size: 31px;
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin-bottom: 13px;
+        }
+
+        .login-description {
+            color: #788398;
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 27px;
+        }
+
+
+        /* =========================
+           INPUTS
+        ========================= */
+
+        .input-group {
+            margin-bottom: 17px;
+        }
+
+        .input-group input {
+            width: 100%;
+            height: 56px;
+
+            border: 1px solid #dfe4ec;
+            border-radius: 12px;
+
+            padding: 0 16px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #ef233c;
+            box-shadow: 0 0 0 3px #ef233c18;
+        }
+
+
+        /* =========================
+           LOGIN BUTTON
+        ========================= */
+
+        .login-button {
+            width: 100%;
+            height: 56px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: linear-gradient(90deg, #ef233c, #d90429);
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px #ef233c35;
+        }
+
+
+        /* =========================
+           DIVIDER
+        ========================= */
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            margin: 22px 0;
+
+            color: #8a94a6;
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e5e8ee;
+        }
+
+
+        /* =========================
+           GOOGLE BUTTON
+        ========================= */
+
+        .google-button {
+            width: 100%;
+            height: 55px;
+
+            border: 1px solid #dfe4ec;
+            border-radius: 12px;
+
+            background: white;
+            color: #26334b;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .google-button:hover {
+            background: #fafafa;
+            border-color: #c9cfda;
+        }
+
+
+        /* =========================
+           REGISTER LINK
+        ========================= */
+
+        .register-text {
+            text-align: center;
+            margin-top: 25px;
+
+            color: #788398;
+            font-size: 14px;
+        }
+
+        .register-text a {
+            color: #ef233c;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+
+        /* =========================
+           ERROR MESSAGE
+        ========================= */
+
+        .message {
+            min-height: 22px;
+            margin-top: 15px;
+
+            color: #d90429;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           RESPONSIVE DESIGN
+        ========================= */
+
+        @media (max-width: 1150px) {
+
+            .header {
+                padding: 20px 4%;
+            }
+
+            .main {
+                width: 90%;
+                grid-template-columns: 1fr;
+                gap: 45px;
+            }
+
+            .hero {
+                text-align: center;
+            }
+
+            .hero-description {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .features {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .illustration {
+                max-width: 500px;
+            }
+
+            .login-card {
+                width: 100%;
+                max-width: 500px;
+                margin: auto;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .header {
+                height: auto;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 20px;
+            }
+
+            .logo {
+                font-size: 28px;
+            }
+
+            .navigation {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 17px;
+            }
+
+            .header-button {
+                display: none;
+            }
+
+            .main {
+                padding: 35px 0;
+            }
+
+            .hero h1 {
+                font-size: 54px;
+                letter-spacing: -2px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+
+            .login-card {
+                padding: 28px 22px;
+            }
+
+            .login-card h2 {
+                font-size: 27px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="header">
+
+        <a href="index.html" class="logo">
+            <span class="logo-dark">Career</span><span class="logo-red">Path</span>
+        </a>
+
+
+        <nav class="navigation">
+
+            <a href="index.html">Home</a>
+
+            <a href="../pages/roadmap.html">Roadmaps</a>
+
+            <a href="../pages/dashboard.html">Saved Roadmaps</a>
+
+            <a href="#about">About</a>
+
+        </nav>
+
+
+        <div class="header-button">
+            🎯 Your Future. Our Goal.
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================= -->
+
+    <main class="main">
+
+
+        <!-- HERO SECTION -->
+
+        <section class="hero">
+
+            <div class="tag">
+                ✦ Plan &nbsp; ★ Learn &nbsp; ★ Grow
+            </div>
+
+
+            <h1>
+                Discover Your
+                <span>Career Path</span>
+            </h1>
+
+
+            <p class="hero-description">
+
+                Explore career roadmaps, learn essential skills,
+                discover courses, and find internship opportunities
+                to build your future with confidence.
+
+            </p>
+
+
+
+            <!-- FEATURES -->
+
+            <div class="features">
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        🗺️
+                    </div>
+
+                    Detailed<br>
+                    Roadmaps
+
+                </div>
+
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        🎓
+                    </div>
+
+                    Learn<br>
+                    Essential Skills
+
+                </div>
+
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        💼
+                    </div>
+
+                    Discover<br>
+                    Courses
+
+                </div>
+
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        👥
+                    </div>
+
+                    Find Internship<br>
+                    Opportunities
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- CREATIVE ILLUSTRATION -->
+
+            <div class="illustration">
+
+                <div class="illustration-background"></div>
+
+                <div class="illustration-content">
+
+                    <span class="emoji">
+                        🎓 🚀
+                    </span>
+
+                    <p>
+                        Your Dream Career<br>
+                        Starts Here ↗
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- LOGIN SECTION -->
+
+        <section class="login-card">
+
+
+            <div class="welcome">
+                👋 Welcome Back
+            </div>
+
+
+            <div class="red-line"></div>
+
+
+            <h2>
+                Login to Your Account
+            </h2>
+
+
+            <p class="login-description">
+
+                Continue your journey towards a better future.
+
+            </p>
+
+
+
+            <!-- LOGIN FORM -->
+
+            <form id="loginForm">
+
+
+                <div class="input-group">
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Email address"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="input-group">
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+
+                    Login →
+
+                </button>
+
+
+            </form>
+
+
+
+            <!-- DIVIDER -->
+
+            <div class="divider">
+                OR
+            </div>
+
+
+
+            <!-- GOOGLE LOGIN -->
+
+            <button
+                type="button"
+                id="googleLoginButton"
+                class="google-button"
+            >
+
+                🌈 Continue with Google
+
+            </button>
+
+
+
+            <!-- REGISTER -->
+
+            <p class="register-text">
+
+                Don't have an account?
+
+                <a href="../pages/register.html">
+                    Register →
+                </a>
+
+            </p>
+
+
+
+            <!-- MESSAGE -->
+
+            <p
+                id="message"
+                class="message"
+                role="alert"
+            ></p>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         FIREBASE LOGIN
+    ========================= -->
+
+    <script type="module">
+
+
+        import {
+            auth,
+            googleProvider
+        } from "./firebase-config.js";
+
+
+        import {
+            signInWithEmailAndPassword,
+            signInWithPopup
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+
+        const loginForm =
+            document.getElementById("loginForm");
+
+
+        const googleLoginButton =
+            document.getElementById("googleLoginButton");
+
+
+        const message =
+            document.getElementById("message");
+
+
+
+        function showMessage(text) {
+
+            message.textContent = text;
+
+        }
+
+
+
+        // EMAIL AND PASSWORD LOGIN
+
+        loginForm.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+
+            const email =
+                document.getElementById("email").value.trim();
+
+
+            const password =
+                document.getElementById("password").value;
+
+
+            showMessage("Logging in...");
+
+
+            try {
+
+                await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+
+                window.location.href =
+                    "../pages/dashboard.html";
+
+
+            } catch (error) {
+
+                console.error("Login error:", error);
+
+
+                showMessage(
+                    "Login failed. Please check your email and password."
+                );
+
+            }
+
+        });
+
+
+
+        // GOOGLE LOGIN
+
+        googleLoginButton.addEventListener("click", async () => {
+
+            showMessage("Opening Google login...");
+
+
+            try {
+
+                await signInWithPopup(
+                    auth,
+                    googleProvider
+                );
+
+
+                window.location.href =
+                    "../pages/dashboard.html";
+
+
+            } catch (error) {
+
+                console.error("Google login error:", error);
+
+
+                showMessage(
+                    "Google login failed. Please try again."
+                );
+
+            }
+
+        });
+
+
+    </script>
+
+
+</body>
+
+</html>

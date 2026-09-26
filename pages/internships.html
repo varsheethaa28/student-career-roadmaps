@@ -1,0 +1,780 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>CareerPath | Find Internships</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #fff5f6;
+      color: #333;
+    }
+
+    header {
+      background: #d90429;
+      color: white;
+      padding: 18px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      width: 86%;
+      max-width: 1200px;
+      margin: 35px auto;
+    }
+
+    .hero {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+      margin-bottom: 30px;
+    }
+
+    .hero h1 {
+      color: #d90429;
+      font-size: 34px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      color: #666;
+      line-height: 1.7;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .search-box {
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+      margin-bottom: 35px;
+    }
+
+    .search-box h2 {
+      color: #d90429;
+      margin-bottom: 22px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-weight: bold;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      background: white;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #d90429;
+    }
+
+    .search-button {
+      margin-top: 22px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 25px;
+      background: #d90429;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .search-button:hover {
+      background: #a80320;
+    }
+
+    .search-note {
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    .section-title {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 27px;
+    }
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .platform-card {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
+      transition: 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .platform-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .platform-icon {
+      font-size: 35px;
+      margin-bottom: 15px;
+    }
+
+    .platform-card h3 {
+      color: #d90429;
+      margin-bottom: 10px;
+    }
+
+    .platform-card p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+      flex-grow: 1;
+      margin-bottom: 20px;
+    }
+
+    .platform-button {
+      display: block;
+      text-align: center;
+      background: #d90429;
+      color: white;
+      text-decoration: none;
+      padding: 11px;
+      border-radius: 22px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .platform-button:hover {
+      background: #a80320;
+    }
+
+    .save-section {
+      background: #ffe0e5;
+      padding: 30px;
+      border-radius: 18px;
+      margin-top: 35px;
+      text-align: center;
+    }
+
+    .save-section h2 {
+      color: #d90429;
+      margin-bottom: 12px;
+    }
+
+    .save-section p {
+      color: #555;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .save-button {
+      display: inline-block;
+      background: #d90429;
+      color: white;
+      text-decoration: none;
+      padding: 13px 25px;
+      border-radius: 25px;
+      font-weight: bold;
+    }
+
+    .save-button:hover {
+      background: #a80320;
+    }
+
+    .info-section {
+      background: white;
+      padding: 28px;
+      border-radius: 18px;
+      margin-top: 35px;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-section h2 {
+      color: #d90429;
+      margin-bottom: 15px;
+    }
+
+    .info-section ul {
+      padding-left: 20px;
+    }
+
+    .info-section li {
+      margin-bottom: 12px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    footer {
+      background: #d90429;
+      color: white;
+      text-align: center;
+      padding: 25px;
+      margin-top: 50px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .platform-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 650px) {
+      .container {
+        width: 92%;
+      }
+
+      .hero h1 {
+        font-size: 27px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .platform-grid {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        padding: 18px 5%;
+      }
+
+      nav {
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+
+    <div class="logo">
+      CareerPath
+    </div>
+
+    <nav>
+      <a href="../frontend/index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="roadmap.html">Roadmaps</a>
+      <a href="profile.html">Profile</a>
+    </nav>
+
+  </header>
+
+
+  <!-- Main Content -->
+  <main class="container">
+
+    <!-- Hero Section -->
+    <section class="hero">
+
+      <h1>Find Your Dream Internship 🚀</h1>
+
+      <p>
+        Explore internship opportunities from trusted platforms.
+        Search for internships based on your role, location,
+        category, and preferred work mode.
+      </p>
+
+    </section>
+
+
+    <!-- Search Section -->
+    <section class="search-box">
+
+      <h2>🔍 Search for Internships</h2>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="role">Internship Role</label>
+
+          <input
+            type="text"
+            id="role"
+            placeholder="Example: Web Developer"
+          />
+        </div>
+
+
+        <div class="form-group">
+          <label for="location">Location</label>
+
+          <input
+            type="text"
+            id="location"
+            placeholder="Example: Chennai"
+          />
+        </div>
+
+
+        <div class="form-group">
+          <label for="category">Category</label>
+
+          <select id="category">
+
+            <option value="">Select Category</option>
+            <option value="Technology">Technology</option>
+            <option value="Cybersecurity">Cybersecurity</option>
+            <option value="Data Science">Data Science</option>
+            <option value="Artificial Intelligence">Artificial Intelligence</option>
+            <option value="Design">Design</option>
+            <option value="Business">Business</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Engineering">Engineering</option>
+
+          </select>
+        </div>
+
+
+        <div class="form-group">
+          <label for="workMode">Work Mode</label>
+
+          <select id="workMode">
+
+            <option value="">Select Work Mode</option>
+            <option value="Remote">Remote</option>
+            <option value="On-site">On-site</option>
+            <option value="Hybrid">Hybrid</option>
+
+          </select>
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="search-button"
+        id="searchButton"
+      >
+        Search on LinkedIn Jobs 🔎
+      </button>
+
+      <p class="search-note">
+        Your search will open in a new LinkedIn Jobs tab.
+      </p>
+
+    </section>
+
+
+    <!-- Internship Platforms -->
+    <h2 class="section-title">
+      🌐 Explore Internship Platforms
+    </h2>
+
+
+    <section class="platform-grid">
+
+
+      <!-- Internshala -->
+      <article class="platform-card">
+
+        <div class="platform-icon">🎓</div>
+
+        <h3>Internshala</h3>
+
+        <p>
+          Find internships, work-from-home opportunities,
+          and student training programs.
+        </p>
+
+        <a
+          class="platform-button"
+          href="https://internshala.com/internships"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Explore Internshala
+        </a>
+
+      </article>
+
+
+      <!-- Unstop -->
+      <article class="platform-card">
+
+        <div class="platform-icon">🏆</div>
+
+        <h3>Unstop</h3>
+
+        <p>
+          Discover internships, competitions, hackathons,
+          and hiring challenges.
+        </p>
+
+        <a
+          class="platform-button"
+          href="https://unstop.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Explore Unstop
+        </a>
+
+      </article>
+
+
+      <!-- LinkedIn -->
+      <article class="platform-card">
+
+        <div class="platform-icon">💼</div>
+
+        <h3>LinkedIn Jobs</h3>
+
+        <p>
+          Search for internships and entry-level positions
+          from different companies.
+        </p>
+
+        <a
+          class="platform-button"
+          href="https://www.linkedin.com/jobs/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Explore LinkedIn
+        </a>
+
+      </article>
+
+
+      <!-- Indeed -->
+      <article class="platform-card">
+
+        <div class="platform-icon">🔎</div>
+
+        <h3>Indeed India</h3>
+
+        <p>
+          Search for internship and fresher job opportunities
+          across India.
+        </p>
+
+        <a
+          class="platform-button"
+          href="https://in.indeed.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Explore Indeed
+        </a>
+
+      </article>
+
+
+      <!-- Wellfound -->
+      <article class="platform-card">
+
+        <div class="platform-icon">🚀</div>
+
+        <h3>Wellfound</h3>
+
+        <p>
+          Explore startup internships and opportunities
+          in technology companies.
+        </p>
+
+        <a
+          class="platform-button"
+          href="https://wellfound.com/jobs"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Explore Wellfound
+        </a>
+
+      </article>
+
+
+      <!-- Naukri -->
+      <article class="platform-card">
+
+        <div class="platform-icon">📄</div>
+
+        <h3>Naukri</h3>
+
+        <p>
+          Find internships, fresher jobs, and early-career
+          opportunities in different industries.
+        </p>
+
+        <a
+          class="platform-button"
+          href="https://www.naukri.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Explore Naukri
+        </a>
+
+      </article>
+
+
+      <!-- AICTE -->
+      <article class="platform-card">
+
+        <div class="platform-icon">🏛️</div>
+
+        <h3>AICTE Internship Portal</h3>
+
+        <p>
+          Explore internship opportunities provided through
+          the AICTE internship portal.
+        </p>
+
+        <a
+          class="platform-button"
+          href="https://internship.aicte-india.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Explore AICTE
+        </a>
+
+      </article>
+
+
+    </section>
+
+
+    <!-- Save Internship Section -->
+    <section class="save-section">
+
+      <h2>📌 Save Your Internship Opportunities</h2>
+
+      <p>
+        Found an interesting internship?
+        Save its details to your CareerPath account
+        and track your application status.
+      </p>
+
+      <a
+        href="save-internship.html"
+        class="save-button"
+      >
+        + Save an Internship
+      </a>
+
+      <br />
+      <br />
+
+      <a
+        href="saved-internships.html"
+        class="save-button"
+      >
+        📋 View Saved Internships
+      </a>
+
+    </section>
+
+
+    <!-- Safety Information -->
+    <section class="info-section">
+
+      <h2>⚠️ Internship Safety Tips</h2>
+
+      <ul>
+
+        <li>
+          Never pay money to receive an internship offer.
+        </li>
+
+        <li>
+          Verify the company and recruiter before sharing personal information.
+        </li>
+
+        <li>
+          Do not share passwords, OTPs, or banking details.
+        </li>
+
+        <li>
+          Read the internship description carefully before applying.
+        </li>
+
+        <li>
+          Use official company websites whenever possible.
+        </li>
+
+      </ul>
+
+    </section>
+
+  </main>
+
+
+  <!-- Footer -->
+  <footer>
+
+    <p>
+      © 2026 CareerPath. Build your future, one step at a time.
+    </p>
+
+  </footer>
+
+
+  <!-- Search JavaScript -->
+  <script>
+
+    const searchButton =
+      document.getElementById("searchButton");
+
+
+    searchButton.addEventListener("click", () => {
+
+      const role =
+        document.getElementById("role").value.trim();
+
+      const location =
+        document.getElementById("location").value.trim();
+
+      const category =
+        document.getElementById("category").value;
+
+      const workMode =
+        document.getElementById("workMode").value;
+
+
+      // Check whether at least one field is entered
+      if (
+        !role &&
+        !location &&
+        !category &&
+        !workMode
+      ) {
+
+        alert(
+          "Please enter at least one search preference."
+        );
+
+        return;
+
+      }
+
+
+      // Create search keywords
+      const searchQuery = [];
+
+
+      if (role) {
+        searchQuery.push(role);
+      }
+
+      if (category) {
+        searchQuery.push(category);
+      }
+
+      if (workMode) {
+        searchQuery.push(workMode);
+      }
+
+
+      // Add internship keyword
+      searchQuery.push("internship");
+
+
+      // Create LinkedIn search URL
+      const keywords = encodeURIComponent(
+        searchQuery.join(" ")
+      );
+
+
+      let linkedinUrl =
+        "https://www.linkedin.com/jobs/search/?keywords=" +
+        keywords;
+
+
+      // Add location if entered
+      if (location) {
+
+        linkedinUrl +=
+          "&location=" +
+          encodeURIComponent(location);
+
+      }
+
+
+      // Open LinkedIn Jobs in a new tab
+      window.open(
+        linkedinUrl,
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+    });
+
+  </script>
+
+</body>
+
+</html>

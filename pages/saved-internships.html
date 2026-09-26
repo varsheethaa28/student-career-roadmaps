@@ -1,0 +1,972 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Saved Internships | CareerPath</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #fff5f6;
+            color: #333;
+        }
+
+        /* HEADER */
+
+        header {
+            background: white;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #d90429;
+        }
+
+        nav {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: #d90429;
+        }
+
+        .dashboard-btn {
+            background: #d90429;
+            color: white !important;
+            padding: 10px 16px;
+            border-radius: 20px;
+        }
+
+        /* PAGE */
+
+        .page-container {
+            max-width: 1150px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .page-heading {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .page-heading h1 {
+            color: #d90429;
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .page-heading p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .primary-btn {
+            background: #d90429;
+            color: white;
+        }
+
+        .secondary-btn {
+            background: white;
+            color: #d90429;
+            border: 1px solid #d90429;
+        }
+
+        .primary-btn:hover {
+            background: #b80322;
+        }
+
+        .secondary-btn:hover {
+            background: #fff0f2;
+        }
+
+        /* MESSAGE */
+
+        .message {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .error-message {
+            color: #d90429;
+        }
+
+        /* INTERNSHIP GRID */
+
+        .internship-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .internship-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .internship-card h2 {
+            color: #d90429;
+            font-size: 21px;
+            line-height: 1.3;
+        }
+
+        .company-name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .details {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .status-badge {
+            display: inline-block;
+            width: fit-content;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            background: #ffe0e5;
+            color: #d90429;
+        }
+
+        .card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+
+        .card-btn {
+            border: none;
+            border-radius: 7px;
+            padding: 10px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .apply-btn {
+            background: #d90429;
+            color: white;
+        }
+
+        .edit-btn {
+            background: #fff0f2;
+            color: #d90429;
+            border: 1px solid #ffc2cc;
+        }
+
+        .delete-btn {
+            background: #f1f1f1;
+            color: #555;
+        }
+
+        .apply-btn:hover {
+            background: #b80322;
+        }
+
+        .edit-btn:hover {
+            background: #ffe0e5;
+        }
+
+        .delete-btn:hover {
+            background: #ddd;
+        }
+
+        /* EDIT FORM */
+
+        .edit-panel {
+            display: none;
+            background: #fff0f2;
+            border: 1px solid #ffc2cc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+
+        .edit-panel.open {
+            display: block;
+        }
+
+        .edit-panel label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .edit-panel select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            background: white;
+            margin-bottom: 10px;
+        }
+
+        .update-btn {
+            width: 100%;
+            border: none;
+            padding: 10px;
+            border-radius: 7px;
+            background: #d90429;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* FOOTER */
+
+        footer {
+            background: #d90429;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 50px;
+            font-size: 14px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 950px) {
+
+            .internship-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .page-heading h1 {
+                font-size: 28px;
+            }
+
+            .internship-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="logo">
+            CareerPath
+        </div>
+
+        <nav>
+
+            <a href="../frontend/index.html">
+                Home
+            </a>
+
+            <a href="roadmap.html">
+                Roadmaps
+            </a>
+
+            <a href="internships.html">
+                Internships
+            </a>
+
+            <a href="profile.html">
+                Profile
+            </a>
+
+            <a href="dashboard.html" class="dashboard-btn">
+                Dashboard
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="page-container">
+
+        <section class="page-heading">
+
+            <h1>
+                My Saved Internships 💼
+            </h1>
+
+            <p>
+                Keep track of your internship opportunities
+                and manage your application progress.
+            </p>
+
+        </section>
+
+
+        <!-- ACTION BUTTONS -->
+
+        <div class="top-actions">
+
+            <a
+                href="save-internship.html"
+                class="action-btn primary-btn"
+            >
+                + Save Internship
+            </a>
+
+            <a
+                href="internships.html"
+                class="action-btn secondary-btn"
+            >
+                Explore Internships
+            </a>
+
+        </div>
+
+
+        <!-- STATUS MESSAGE -->
+
+        <div
+            id="message"
+            class="message"
+        >
+            Checking your account...
+        </div>
+
+
+        <!-- INTERNSHIP CARDS -->
+
+        <section
+            id="internshipGrid"
+            class="internship-grid"
+        ></section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <p>
+            © 2026 CareerPath | Build Your Future 🚀
+        </p>
+
+    </footer>
+
+
+    <!-- FIREBASE SCRIPT -->
+
+    <script type="module">
+
+        import {
+            auth,
+            db
+        } from "../frontend/firebase-config.js";
+
+        import {
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        import {
+            collection,
+            getDocs,
+            query,
+            orderBy,
+            doc,
+            updateDoc,
+            deleteDoc
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+        const message = document.getElementById("message");
+
+        const internshipGrid =
+            document.getElementById("internshipGrid");
+
+
+        let currentUser = null;
+
+
+        // Escape text before placing it inside HTML
+
+        function escapeHTML(value) {
+
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        // Format the deadline
+
+        function formatDeadline(deadline) {
+
+            if (!deadline) {
+
+                return "Not specified";
+
+            }
+
+            const date = new Date(deadline + "T00:00:00");
+
+            if (Number.isNaN(date.getTime())) {
+
+                return deadline;
+
+            }
+
+            return date.toLocaleDateString("en-IN", {
+
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+
+            });
+
+        }
+
+
+        // Load saved internships
+
+        async function loadInternships(user) {
+
+            currentUser = user;
+
+            message.textContent =
+                "Loading your saved internships...";
+
+            message.className = "message";
+
+            internshipGrid.innerHTML = "";
+
+
+            try {
+
+                const internshipsCollection = collection(
+                    db,
+                    "users",
+                    user.uid,
+                    "internships"
+                );
+
+
+                let snapshot;
+
+
+                try {
+
+                    const sortedQuery = query(
+                        internshipsCollection,
+                        orderBy("createdAt", "desc")
+                    );
+
+                    snapshot = await getDocs(sortedQuery);
+
+                } catch (sortingError) {
+
+                    console.warn(
+                        "Sorted query failed. Loading without sorting.",
+                        sortingError
+                    );
+
+                    snapshot = await getDocs(
+                        internshipsCollection
+                    );
+
+                }
+
+
+                if (snapshot.empty) {
+
+                    message.textContent =
+                        "You have not saved any internships yet.";
+
+                    message.className = "message";
+
+                    return;
+
+                }
+
+
+                message.textContent =
+                    `You have saved ${snapshot.size} internship(s).`;
+
+                message.className = "message";
+
+
+                snapshot.forEach((internshipDocument) => {
+
+                    const internship = internshipDocument.data();
+
+                    const internshipId =
+                        internshipDocument.id;
+
+
+                    createInternshipCard(
+                        internshipId,
+                        internship
+                    );
+
+                });
+
+
+            } catch (error) {
+
+                console.error(
+                    "Error loading internships:",
+                    error
+                );
+
+                message.textContent =
+                    "Unable to load internships. Please try again.";
+
+                message.className =
+                    "message error-message";
+
+            }
+
+        }
+
+
+        // Create an internship card
+
+        function createInternshipCard(id, internship) {
+
+            const card =
+                document.createElement("article");
+
+            card.className = "internship-card";
+
+
+            const title =
+                escapeHTML(
+                    internship.title || "Untitled Internship"
+                );
+
+            const company =
+                escapeHTML(
+                    internship.company || "Company not specified"
+                );
+
+            const location =
+                escapeHTML(
+                    internship.location || "Not specified"
+                );
+
+            const workMode =
+                escapeHTML(
+                    internship.workMode || "Not specified"
+                );
+
+            const stipend =
+                escapeHTML(
+                    internship.stipend || "Not specified"
+                );
+
+            const deadline =
+                escapeHTML(
+                    formatDeadline(internship.deadline)
+                );
+
+            const status =
+                escapeHTML(
+                    internship.status || "Saved"
+                );
+
+            const notes =
+                escapeHTML(
+                    internship.notes || "No notes added."
+                );
+
+            const applicationLink =
+                escapeHTML(
+                    internship.applicationLink || "#"
+                );
+
+
+            card.innerHTML = `
+
+                <h2>${title}</h2>
+
+                <div class="company-name">
+                    🏢 ${company}
+                </div>
+
+                <div class="details">
+
+                    <div>
+                        <span class="detail-label">📍 Location:</span>
+                        ${location}
+                    </div>
+
+                    <div>
+                        <span class="detail-label">💼 Work Mode:</span>
+                        ${workMode}
+                    </div>
+
+                    <div>
+                        <span class="detail-label">💰 Stipend:</span>
+                        ${stipend}
+                    </div>
+
+                    <div>
+                        <span class="detail-label">📅 Deadline:</span>
+                        ${deadline}
+                    </div>
+
+                    <div>
+                        <span class="detail-label">📝 Notes:</span>
+                        ${notes}
+                    </div>
+
+                </div>
+
+                <span class="status-badge">
+                    Status: ${status}
+                </span>
+
+                <div class="card-actions">
+
+                    <a
+                        href="${applicationLink}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="card-btn apply-btn"
+                    >
+                        Open Application →
+                    </a>
+
+                    <button
+                        class="card-btn edit-btn"
+                        data-action="edit"
+                    >
+                        Edit Status
+                    </button>
+
+                    <button
+                        class="card-btn delete-btn"
+                        data-action="delete"
+                    >
+                        Delete
+                    </button>
+
+                </div>
+
+                <div class="edit-panel">
+
+                    <label>
+                        Application Status
+                    </label>
+
+                    <select class="status-select">
+
+                        <option value="Saved">
+                            Saved
+                        </option>
+
+                        <option value="Applied">
+                            Applied
+                        </option>
+
+                        <option value="Shortlisted">
+                            Shortlisted
+                        </option>
+
+                        <option value="Rejected">
+                            Rejected
+                        </option>
+
+                    </select>
+
+                    <button class="update-btn">
+                        Update Status
+                    </button>
+
+                </div>
+
+            `;
+
+
+            const editButton =
+                card.querySelector('[data-action="edit"]');
+
+            const deleteButton =
+                card.querySelector('[data-action="delete"]');
+
+            const editPanel =
+                card.querySelector(".edit-panel");
+
+            const statusSelect =
+                card.querySelector(".status-select");
+
+            const updateButton =
+                card.querySelector(".update-btn");
+
+
+            statusSelect.value =
+                internship.status || "Saved";
+
+
+            // Open or close edit panel
+
+            editButton.addEventListener("click", () => {
+
+                editPanel.classList.toggle("open");
+
+            });
+
+
+            // Update status
+
+            updateButton.addEventListener(
+                "click",
+                async () => {
+
+                    const newStatus =
+                        statusSelect.value;
+
+                    updateButton.disabled = true;
+
+                    updateButton.textContent =
+                        "Updating...";
+
+
+                    try {
+
+                        const internshipReference = doc(
+                            db,
+                            "users",
+                            currentUser.uid,
+                            "internships",
+                            id
+                        );
+
+
+                        await updateDoc(
+                            internshipReference,
+                            {
+
+                                status: newStatus
+
+                            }
+                        );
+
+
+                        alert(
+                            "Application status updated successfully!"
+                        );
+
+
+                        await loadInternships(currentUser);
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Error updating status:",
+                            error
+                        );
+
+                        alert(
+                            "Unable to update status. Please try again."
+                        );
+
+                    } finally {
+
+                        updateButton.disabled = false;
+
+                        updateButton.textContent =
+                            "Update Status";
+
+                    }
+
+                }
+            );
+
+
+            // Delete internship
+
+            deleteButton.addEventListener(
+                "click",
+                async () => {
+
+                    const confirmDelete = confirm(
+                        "Are you sure you want to delete this internship?"
+                    );
+
+
+                    if (!confirmDelete) {
+
+                        return;
+
+                    }
+
+
+                    deleteButton.disabled = true;
+
+                    deleteButton.textContent =
+                        "Deleting...";
+
+
+                    try {
+
+                        const internshipReference = doc(
+                            db,
+                            "users",
+                            currentUser.uid,
+                            "internships",
+                            id
+                        );
+
+
+                        await deleteDoc(
+                            internshipReference
+                        );
+
+
+                        alert(
+                            "Internship deleted successfully."
+                        );
+
+
+                        await loadInternships(currentUser);
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Error deleting internship:",
+                            error
+                        );
+
+                        alert(
+                            "Unable to delete internship. Please try again."
+                        );
+
+                    } finally {
+
+                        deleteButton.disabled = false;
+
+                        deleteButton.textContent =
+                            "Delete";
+
+                    }
+
+                }
+            );
+
+
+            internshipGrid.appendChild(card);
+
+        }
+
+
+        // Check login status
+
+        onAuthStateChanged(auth, (user) => {
+
+            if (user) {
+
+                loadInternships(user);
+
+            } else {
+
+                alert(
+                    "Please log in to view your saved internships."
+                );
+
+                window.location.href = "login.html";
+
+            }
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>
