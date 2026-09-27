@@ -1,18 +1,15 @@
-// ======================================================
-// CAREERPATH BACKEND
-// ======================================================
-
 require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
 
-// Firebase Admin SDK v14+
 const { initializeApp, cert } = require("firebase-admin/app");
 
-// ======================================================
-// APP SETUP
-// ======================================================
+const serviceAccount = require("./serviceAccountKey.json");
+
+// =====================================================
+// APP
+// =====================================================
 
 const app = express();
 
@@ -20,13 +17,11 @@ app.use(cors());
 app.use(express.json());
 
 
-// ======================================================
+// =====================================================
 // FIREBASE ADMIN
-// ======================================================
+// =====================================================
 
 try {
-    const serviceAccount = require("./serviceAccountKey.json");
-
     initializeApp({
         credential: cert(serviceAccount)
     });
@@ -34,506 +29,445 @@ try {
     console.log("Firebase Admin initialized successfully");
 
 } catch (error) {
-    console.log("Firebase Admin initialization skipped:");
-    console.log(error.message);
+
+    console.error("Firebase Admin initialization failed:");
+    console.error(error.message);
 }
 
 
-// ======================================================
+// =====================================================
 // BASIC ROUTES
-// ======================================================
+// =====================================================
 
 app.get("/", (req, res) => {
+
     res.json({
         success: true,
-        message: "CareerPath backend is running",
-        service: "CareerPath API"
+        message: "CareerPath backend is running"
     });
+
 });
 
 
 app.get("/api/health", (req, res) => {
+
     res.json({
         success: true,
-        status: "healthy"
+        status: "ok",
+        service: "CareerPath API"
     });
+
 });
 
 
-// ======================================================
+// =====================================================
 // CAREER DATABASE
-// ======================================================
+// =====================================================
 
 const careerProfiles = {
 
-    // ==================================================
-    // TECHNOLOGY
-    // ==================================================
+    // -------------------------------------------------
+    // JAVA
+    // -------------------------------------------------
 
-    "full stack developer": {
+    "java developer": {
+
         category: "Technology",
-        title: "Full Stack Developer",
+
         overview:
-            "A Full Stack Developer builds complete web applications by working with both frontend and backend technologies.",
+            "A Java Developer develops software applications using Java, object-oriented programming, databases, APIs and Java frameworks.",
+
         prerequisites: [
-            "Basic programming knowledge",
-            "HTML and CSS",
-            "JavaScript fundamentals"
+            "Basic computer knowledge",
+            "Logical thinking",
+            "Basic programming concepts"
         ],
+
         skills: [
-            "HTML",
-            "CSS",
-            "JavaScript",
-            "React",
-            "Node.js",
-            "Express.js",
+            "Java fundamentals",
+            "Object-Oriented Programming",
+            "Classes and Objects",
+            "Inheritance",
+            "Polymorphism",
+            "Abstraction",
+            "Exception Handling",
+            "Collections Framework",
+            "Generics",
+            "File Handling",
+            "Multithreading",
+            "Data Structures",
+            "Algorithms",
+            "SQL",
             "REST APIs",
-            "Databases",
+            "Spring Boot",
             "Git and GitHub"
         ],
+
         tools: [
-            "VS Code",
-            "Git",
-            "GitHub",
+            "JDK",
+            "IntelliJ IDEA",
+            "Eclipse",
+            "Maven",
+            "Gradle",
             "Postman",
-            "MongoDB",
-            "Firebase"
+            "MySQL",
+            "Git",
+            "GitHub"
         ],
+
         projects: [
-            "Personal portfolio",
-            "Student management system",
-            "E-commerce website",
-            "Full stack internship portal"
+            "Java Console Application",
+            "Student Management System",
+            "Banking Management System",
+            "Java Database Application",
+            "Spring Boot REST API",
+            "E-commerce Backend",
+            "Online Booking System"
         ],
+
         internship:
-            "Build 2-3 complete projects, maintain a GitHub profile and apply for frontend, backend and full-stack internships.",
+            "Look for Java Developer, Backend Developer and Spring Boot internships. Build at least two Java projects and maintain a professional GitHub profile.",
+
         careers: [
-            "Full Stack Developer",
-            "Web Developer",
-            "Software Developer",
+            "Java Developer",
             "Backend Developer",
-            "Frontend Developer"
+            "Spring Boot Developer",
+            "Software Developer",
+            "Java Application Developer"
         ]
     },
 
-    "frontend developer": {
+
+    // -------------------------------------------------
+    // PYTHON
+    // -------------------------------------------------
+
+    "python developer": {
+
         category: "Technology",
-        title: "Frontend Developer",
+
         overview:
-            "Frontend Developers create the visual and interactive parts of websites and web applications.",
+            "A Python Developer builds software, automation tools, APIs and data-driven applications using Python.",
+
         prerequisites: [
             "Basic computer knowledge",
-            "HTML fundamentals",
-            "CSS fundamentals"
+            "Logical thinking",
+            "Basic programming concepts"
         ],
+
+        skills: [
+            "Python fundamentals",
+            "Variables and data types",
+            "Functions",
+            "Object-Oriented Programming",
+            "Data Structures",
+            "Algorithms",
+            "File Handling",
+            "Exception Handling",
+            "APIs",
+            "Databases",
+            "Git"
+        ],
+
+        tools: [
+            "Python",
+            "VS Code",
+            "PyCharm",
+            "Git",
+            "GitHub",
+            "Postman"
+        ],
+
+        projects: [
+            "Automation Tool",
+            "Student Management System",
+            "REST API",
+            "Web Application",
+            "Data Processing Application"
+        ],
+
+        internship:
+            "Apply for Python Developer, Backend Developer, Automation and Software Development internships.",
+
+        careers: [
+            "Python Developer",
+            "Backend Developer",
+            "Software Developer",
+            "Automation Developer"
+        ]
+    },
+
+
+    // -------------------------------------------------
+    // FULL STACK
+    // -------------------------------------------------
+
+    "full stack developer": {
+
+        category: "Technology",
+
+        overview:
+            "A Full Stack Developer builds complete web applications including frontend interfaces, backend services, databases and APIs.",
+
+        prerequisites: [
+            "Basic computer knowledge",
+            "Basic programming knowledge"
+        ],
+
         skills: [
             "HTML",
             "CSS",
             "JavaScript",
             "Responsive Design",
             "React",
-            "Git",
-            "REST API integration"
+            "Node.js",
+            "Express.js",
+            "REST APIs",
+            "Databases",
+            "Authentication",
+            "Git and GitHub"
         ],
+
         tools: [
             "VS Code",
+            "Git",
+            "GitHub",
+            "Postman",
+            "MongoDB",
+            "MySQL"
+        ],
+
+        projects: [
+            "Portfolio Website",
+            "Student Management System",
+            "E-commerce Website",
+            "Full Stack Authentication System",
+            "Job Portal"
+        ],
+
+        internship:
+            "Build a portfolio and apply for frontend, backend and full-stack internships.",
+
+        careers: [
+            "Full Stack Developer",
+            "Web Developer",
+            "Software Developer",
+            "Application Developer"
+        ]
+    },
+
+
+    // -------------------------------------------------
+    // FRONTEND
+    // -------------------------------------------------
+
+    "frontend developer": {
+
+        category: "Technology",
+
+        overview:
+            "A Frontend Developer creates the user interface and interactive parts of websites and web applications.",
+
+        prerequisites: [
+            "Basic computer knowledge",
+            "Interest in web development"
+        ],
+
+        skills: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "Responsive Design",
+            "React",
+            "UI Development",
+            "API Integration",
+            "Git"
+        ],
+
+        tools: [
+            "VS Code",
+            "Git",
             "GitHub",
             "Chrome DevTools",
             "Figma"
         ],
+
         projects: [
-            "Portfolio website",
-            "Responsive landing page",
-            "Weather application",
-            "Student dashboard"
+            "Portfolio Website",
+            "Responsive Landing Page",
+            "Dashboard UI",
+            "E-commerce Frontend"
         ],
+
         internship:
-            "Create responsive websites and publish them online. Build a portfolio and apply for frontend internships.",
+            "Apply for frontend and UI development internships after building several responsive projects.",
+
         careers: [
             "Frontend Developer",
-            "React Developer",
+            "UI Developer",
             "Web Developer",
-            "UI Developer"
+            "React Developer"
         ]
     },
+
+
+    // -------------------------------------------------
+    // BACKEND
+    // -------------------------------------------------
 
     "backend developer": {
-        category: "Technology",
-        title: "Backend Developer",
-        overview:
-            "Backend Developers create APIs, server-side applications, authentication systems and database logic.",
-        prerequisites: [
-            "Programming fundamentals",
-            "Basic databases",
-            "Basic networking"
-        ],
-        skills: [
-            "Node.js",
-            "Express.js",
-            "REST APIs",
-            "Authentication",
-            "Databases",
-            "SQL",
-            "MongoDB",
-            "Git"
-        ],
-        tools: [
-            "VS Code",
-            "Postman",
-            "MongoDB Compass",
-            "GitHub"
-        ],
-        projects: [
-            "REST API",
-            "Authentication system",
-            "Student management backend",
-            "E-commerce backend"
-        ],
-        internship:
-            "Build APIs and backend projects and demonstrate them through GitHub and Postman collections.",
-        careers: [
-            "Backend Developer",
-            "Node.js Developer",
-            "API Developer",
-            "Software Developer"
-        ]
-    },
 
-    "mobile app developer": {
         category: "Technology",
-        title: "Mobile App Developer",
-        overview:
-            "Mobile App Developers build applications for Android and iOS devices.",
-        prerequisites: [
-            "Programming fundamentals",
-            "Basic UI concepts"
-        ],
-        skills: [
-            "Java",
-            "Kotlin",
-            "Flutter",
-            "Dart",
-            "React Native",
-            "APIs",
-            "Firebase"
-        ],
-        tools: [
-            "Android Studio",
-            "VS Code",
-            "Firebase",
-            "GitHub"
-        ],
-        projects: [
-            "Student app",
-            "Expense tracker",
-            "Travel application",
-            "College management app"
-        ],
-        internship:
-            "Build and publish at least one functional mobile application.",
-        careers: [
-            "Android Developer",
-            "Flutter Developer",
-            "Mobile App Developer",
-            "React Native Developer"
-        ]
-    },
 
-    "python developer": {
-        category: "Technology",
-        title: "Python Developer",
         overview:
-            "Python Developers use Python for software development, automation, backend systems and data applications.",
+            "A Backend Developer develops server-side applications, APIs, databases and business logic.",
+
         prerequisites: [
             "Basic programming",
             "Logical thinking"
         ],
+
         skills: [
-            "Python",
-            "Object-Oriented Programming",
+            "Programming Fundamentals",
+            "REST APIs",
+            "Databases",
+            "Authentication",
+            "Server Development",
             "Data Structures",
-            "Flask",
-            "Django",
-            "APIs",
-            "SQL",
+            "Algorithms",
             "Git"
         ],
+
         tools: [
-            "VS Code",
-            "PyCharm",
-            "GitHub",
-            "Postman"
+            "Node.js",
+            "Express.js",
+            "Postman",
+            "MongoDB",
+            "MySQL",
+            "GitHub"
         ],
+
         projects: [
-            "Python automation tool",
             "REST API",
-            "Django website",
-            "Student management system"
+            "Authentication API",
+            "Student Management Backend",
+            "E-commerce Backend"
         ],
+
         internship:
-            "Build Python projects and apply for Python development internships.",
+            "Apply for backend and API development internships.",
+
         careers: [
-            "Python Developer",
             "Backend Developer",
-            "Django Developer",
+            "API Developer",
+            "Server-side Developer",
             "Software Developer"
         ]
     },
 
 
-    // ==================================================
-    // DATA & AI
-    // ==================================================
-
-    "data analyst": {
-        category: "Data & AI",
-        title: "Data Analyst",
-        overview:
-            "Data Analysts collect, clean, analyze and visualize data to support business decisions.",
-        prerequisites: [
-            "Basic mathematics",
-            "Basic statistics",
-            "Spreadsheet knowledge"
-        ],
-        skills: [
-            "Excel",
-            "SQL",
-            "Python",
-            "Pandas",
-            "Statistics",
-            "Data Visualization",
-            "Power BI"
-        ],
-        tools: [
-            "Excel",
-            "Power BI",
-            "Tableau",
-            "Jupyter Notebook",
-            "MySQL"
-        ],
-        projects: [
-            "Sales dashboard",
-            "Student performance analysis",
-            "COVID data analysis",
-            "E-commerce analytics"
-        ],
-        internship:
-            "Create dashboards and data analysis projects and publish them in your portfolio.",
-        careers: [
-            "Data Analyst",
-            "Business Analyst",
-            "BI Analyst",
-            "Reporting Analyst"
-        ]
-    },
-
-    "data scientist": {
-        category: "Data & AI",
-        title: "Data Scientist",
-        overview:
-            "Data Scientists use statistics, programming and machine learning to extract insights from data.",
-        prerequisites: [
-            "Python basics",
-            "Statistics",
-            "Mathematics"
-        ],
-        skills: [
-            "Python",
-            "Statistics",
-            "Machine Learning",
-            "Pandas",
-            "NumPy",
-            "SQL",
-            "Data Visualization"
-        ],
-        tools: [
-            "Jupyter",
-            "Google Colab",
-            "Scikit-learn",
-            "Power BI"
-        ],
-        projects: [
-            "House price prediction",
-            "Customer segmentation",
-            "Sales prediction",
-            "Recommendation system"
-        ],
-        internship:
-            "Build machine learning and analytics projects and maintain a data science portfolio.",
-        careers: [
-            "Data Scientist",
-            "Data Analyst",
-            "ML Engineer",
-            "Research Analyst"
-        ]
-    },
-
-    "machine learning engineer": {
-        category: "Data & AI",
-        title: "Machine Learning Engineer",
-        overview:
-            "Machine Learning Engineers build, train, evaluate and deploy machine learning models.",
-        prerequisites: [
-            "Python",
-            "Statistics",
-            "Linear algebra basics"
-        ],
-        skills: [
-            "Python",
-            "Machine Learning",
-            "Deep Learning",
-            "Scikit-learn",
-            "TensorFlow",
-            "PyTorch",
-            "SQL",
-            "MLOps"
-        ],
-        tools: [
-            "Google Colab",
-            "Jupyter",
-            "TensorFlow",
-            "PyTorch",
-            "GitHub"
-        ],
-        projects: [
-            "Image classifier",
-            "Recommendation system",
-            "Fraud detection model",
-            "Prediction system"
-        ],
-        internship:
-            "Create several ML projects and learn model deployment.",
-        careers: [
-            "Machine Learning Engineer",
-            "ML Developer",
-            "Data Scientist",
-            "AI Engineer"
-        ]
-    },
-
-    "artificial intelligence engineer": {
-        category: "Data & AI",
-        title: "Artificial Intelligence Engineer",
-        overview:
-            "AI Engineers build applications using machine learning, deep learning and modern AI technologies.",
-        prerequisites: [
-            "Python",
-            "Mathematics",
-            "Programming fundamentals"
-        ],
-        skills: [
-            "Python",
-            "Machine Learning",
-            "Deep Learning",
-            "NLP",
-            "Computer Vision",
-            "Generative AI",
-            "APIs"
-        ],
-        tools: [
-            "Python",
-            "PyTorch",
-            "TensorFlow",
-            "Jupyter",
-            "GitHub"
-        ],
-        projects: [
-            "AI chatbot",
-            "Image recognition system",
-            "Recommendation engine",
-            "AI assistant"
-        ],
-        internship:
-            "Build practical AI applications and learn how to deploy AI models.",
-        careers: [
-            "AI Engineer",
-            "Machine Learning Engineer",
-            "AI Developer",
-            "Data Scientist"
-        ]
-    },
-
-
-    // ==================================================
+    // -------------------------------------------------
     // CYBERSECURITY
-    // ==================================================
+    // -------------------------------------------------
 
     "cybersecurity analyst": {
+
         category: "Cybersecurity",
-        title: "Cybersecurity Analyst",
+
         overview:
-            "Cybersecurity Analysts monitor systems, investigate security incidents and help protect organizations from cyber threats.",
+            "A Cybersecurity Analyst monitors systems, investigates security incidents and helps protect organizations from cyber threats.",
+
         prerequisites: [
-            "Computer fundamentals",
-            "Networking basics",
-            "Operating systems"
+            "Basic computer knowledge",
+            "Basic networking knowledge"
         ],
+
         skills: [
             "Networking",
             "Linux",
-            "Windows Security",
-            "SIEM",
+            "Cybersecurity Fundamentals",
+            "Threat Detection",
             "Incident Response",
-            "Threat Analysis",
-            "Security Fundamentals"
+            "Vulnerability Assessment",
+            "Security Monitoring",
+            "Risk Management"
         ],
+
         tools: [
+            "Linux",
             "Wireshark",
             "Nmap",
-            "Linux",
-            "Splunk",
-            "Burp Suite"
+            "Burp Suite",
+            "SIEM Platforms",
+            "VirtualBox"
         ],
+
         projects: [
-            "Home security lab",
-            "Network traffic analysis",
-            "Security monitoring dashboard",
-            "Incident response simulation"
+            "Network Security Lab",
+            "Vulnerability Assessment Report",
+            "Security Monitoring Dashboard",
+            "Incident Response Simulation"
         ],
+
         internship:
-            "Build a cybersecurity lab and practice defensive security scenarios.",
+            "Build cybersecurity labs and apply for SOC Analyst, Security Analyst and Cybersecurity internships.",
+
         careers: [
-            "Security Analyst",
-            "SOC Analyst",
             "Cybersecurity Analyst",
-            "Security Engineer"
+            "SOC Analyst",
+            "Security Analyst",
+            "Information Security Analyst"
         ]
     },
 
+
+    // -------------------------------------------------
+    // ETHICAL HACKER
+    // -------------------------------------------------
+
     "ethical hacker": {
+
         category: "Cybersecurity",
-        title: "Ethical Hacker",
+
         overview:
-            "Ethical Hackers legally test systems and applications to identify security weaknesses.",
+            "An Ethical Hacker legally tests systems and applications to identify and report security vulnerabilities.",
+
         prerequisites: [
-            "Networking",
-            "Linux",
-            "Programming basics"
+            "Networking fundamentals",
+            "Linux basics",
+            "Cybersecurity fundamentals"
         ],
+
         skills: [
             "Networking",
             "Linux",
             "Web Security",
-            "OWASP",
+            "Vulnerability Assessment",
             "Penetration Testing",
-            "Python",
-            "Security Testing"
+            "OWASP Concepts",
+            "Reconnaissance",
+            "Security Reporting"
         ],
+
         tools: [
             "Kali Linux",
-            "Burp Suite",
             "Nmap",
+            "Burp Suite",
             "Wireshark",
-            "Metasploit"
+            "Metasploit",
+            "VirtualBox"
         ],
+
         projects: [
-            "Web security lab",
-            "CTF challenges",
-            "Vulnerability assessment report",
-            "Local penetration testing lab"
+            "Web Application Security Lab",
+            "Network Scanning Lab",
+            "OWASP Testing Lab",
+            "Security Assessment Report"
         ],
+
         internship:
-            "Practice only on authorized labs such as CTF platforms and intentionally vulnerable applications.",
+            "Build legal security labs and apply for cybersecurity, penetration testing and application security internships.",
+
         careers: [
             "Ethical Hacker",
             "Penetration Tester",
@@ -542,206 +476,388 @@ const careerProfiles = {
         ]
     },
 
-    "cloud security engineer": {
-        category: "Cybersecurity",
-        title: "Cloud Security Engineer",
+
+    // -------------------------------------------------
+    // DATA ANALYST
+    // -------------------------------------------------
+
+    "data analyst": {
+
+        category: "Data and AI",
+
         overview:
-            "Cloud Security Engineers protect cloud infrastructure, applications, identities and data.",
+            "A Data Analyst collects, cleans, analyzes and visualizes data to support business decisions.",
+
         prerequisites: [
-            "Networking",
-            "Linux",
-            "Cloud fundamentals"
+            "Basic mathematics",
+            "Basic computer knowledge"
         ],
+
         skills: [
-            "AWS",
-            "Azure",
-            "IAM",
-            "Cloud Networking",
-            "Security Monitoring",
-            "Containers",
-            "DevSecOps"
+            "Statistics",
+            "Excel",
+            "SQL",
+            "Data Cleaning",
+            "Data Analysis",
+            "Data Visualization",
+            "Python",
+            "Business Intelligence"
         ],
+
         tools: [
-            "AWS",
-            "Azure",
-            "Docker",
-            "Terraform",
-            "GitHub"
+            "Microsoft Excel",
+            "SQL",
+            "Python",
+            "Pandas",
+            "Power BI",
+            "Tableau"
         ],
+
         projects: [
-            "Secure cloud architecture",
-            "IAM project",
-            "Cloud monitoring setup",
-            "Secure container deployment"
+            "Sales Dashboard",
+            "Student Performance Analysis",
+            "Customer Analysis",
+            "Business Analytics Dashboard"
         ],
+
         internship:
-            "Learn one major cloud platform and create security-focused cloud projects.",
+            "Build dashboards and apply for Data Analyst, Business Analyst and BI internships.",
+
         careers: [
-            "Cloud Security Engineer",
-            "Cloud Engineer",
-            "Security Engineer",
-            "DevSecOps Engineer"
+            "Data Analyst",
+            "Business Analyst",
+            "BI Analyst",
+            "Reporting Analyst"
         ]
     },
 
 
-    // ==================================================
-    // DESIGN
-    // ==================================================
+    // -------------------------------------------------
+    // DATA SCIENTIST
+    // -------------------------------------------------
+
+    "data scientist": {
+
+        category: "Data and AI",
+
+        overview:
+            "A Data Scientist uses statistics, programming and machine learning to discover insights and build predictive models.",
+
+        prerequisites: [
+            "Mathematics",
+            "Statistics",
+            "Basic programming"
+        ],
+
+        skills: [
+            "Python",
+            "Statistics",
+            "Probability",
+            "Data Cleaning",
+            "Data Visualization",
+            "Machine Learning",
+            "SQL",
+            "Feature Engineering"
+        ],
+
+        tools: [
+            "Python",
+            "Jupyter Notebook",
+            "Pandas",
+            "NumPy",
+            "Scikit-learn",
+            "Matplotlib",
+            "SQL"
+        ],
+
+        projects: [
+            "Customer Churn Prediction",
+            "House Price Prediction",
+            "Sales Forecasting",
+            "Recommendation System"
+        ],
+
+        internship:
+            "Create machine learning projects and apply for data science and analytics internships.",
+
+        careers: [
+            "Data Scientist",
+            "Data Analyst",
+            "Machine Learning Engineer",
+            "Data Science Associate"
+        ]
+    },
+
+
+    // -------------------------------------------------
+    // UI/UX
+    // -------------------------------------------------
 
     "ui/ux designer": {
+
         category: "Design",
-        title: "UI/UX Designer",
+
         overview:
-            "UI/UX Designers create user-friendly interfaces and experiences for digital products.",
+            "A UI/UX Designer designs digital interfaces and user experiences for websites and applications.",
+
         prerequisites: [
-            "Basic design principles",
-            "Creative thinking"
+            "Creative interest",
+            "Basic computer skills"
         ],
+
         skills: [
-            "UI Design",
-            "UX Research",
+            "User Research",
             "Wireframing",
             "Prototyping",
-            "User Research",
-            "Design Systems"
+            "Visual Design",
+            "Typography",
+            "Color Theory",
+            "Interaction Design",
+            "Usability Testing"
         ],
+
         tools: [
             "Figma",
             "Adobe XD",
+            "Photoshop",
             "FigJam"
         ],
+
         projects: [
-            "Mobile app redesign",
-            "College app UI",
-            "E-commerce prototype",
-            "Student dashboard"
+            "Mobile App Design",
+            "Website Redesign",
+            "Student Dashboard",
+            "E-commerce UI"
         ],
+
         internship:
-            "Build a portfolio containing complete case studies rather than only screenshots.",
+            "Create a strong design portfolio and apply for UI/UX and product design internships.",
+
         careers: [
             "UI Designer",
             "UX Designer",
             "Product Designer",
-            "UX Researcher"
+            "Interaction Designer"
         ]
     },
 
-    "graphic designer": {
-        category: "Design",
-        title: "Graphic Designer",
+
+    // -------------------------------------------------
+    // CONTENT WRITER
+    // -------------------------------------------------
+
+    "content writer": {
+
+        category: "Writing and Media",
+
         overview:
-            "Graphic Designers create visual content for digital and print communication.",
+            "A Content Writer creates useful and engaging written content for websites, blogs, businesses and digital platforms.",
+
         prerequisites: [
-            "Creative interest",
-            "Basic design principles"
+            "Interest in writing",
+            "Basic language skills",
+            "Research ability"
         ],
+
         skills: [
-            "Typography",
-            "Color theory",
-            "Branding",
-            "Layout",
-            "Illustration",
-            "Social media design"
+            "Writing",
+            "Grammar",
+            "Research",
+            "Storytelling",
+            "SEO Writing",
+            "Keyword Research",
+            "Editing",
+            "Proofreading",
+            "Content Planning"
         ],
+
         tools: [
-            "Adobe Photoshop",
-            "Illustrator",
+            "Google Docs",
+            "Microsoft Word",
+            "Grammarly",
+            "Google Search",
             "Canva",
-            "Figma"
+            "SEO Tools"
         ],
+
         projects: [
-            "Brand identity",
-            "Poster collection",
-            "Social media campaign",
-            "Event branding"
+            "Personal Blog",
+            "SEO Article Portfolio",
+            "Product Descriptions",
+            "Website Content",
+            "Social Media Content Plan"
         ],
+
         internship:
-            "Create a portfolio of original designs and case studies.",
+            "Create a writing portfolio and apply for content writing, SEO writing and copywriting internships.",
+
         careers: [
-            "Graphic Designer",
-            "Visual Designer",
-            "Brand Designer",
-            "Creative Designer"
+            "Content Writer",
+            "SEO Writer",
+            "Copywriter",
+            "Technical Writer",
+            "Content Strategist"
         ]
     },
 
-    "animator": {
-        category: "Design",
-        title: "Animator",
+
+    // -------------------------------------------------
+    // DIGITAL MARKETING
+    // -------------------------------------------------
+
+    "digital marketing specialist": {
+
+        category: "Business and Marketing",
+
         overview:
-            "Animators create motion graphics, 2D animations, 3D animations and visual storytelling.",
+            "A Digital Marketing Specialist promotes products, services and brands through online marketing channels.",
+
         prerequisites: [
-            "Drawing or visual design interest",
-            "Storytelling"
+            "Basic computer knowledge",
+            "Interest in marketing"
         ],
+
         skills: [
-            "Animation principles",
-            "Storyboarding",
-            "2D Animation",
-            "3D Animation",
-            "Motion Graphics"
+            "SEO",
+            "Content Marketing",
+            "Social Media Marketing",
+            "Email Marketing",
+            "Keyword Research",
+            "Analytics",
+            "Advertising",
+            "Conversion Optimization"
         ],
+
         tools: [
-            "Blender",
-            "Adobe After Effects",
-            "Premiere Pro",
-            "Toon Boom"
+            "Google Analytics",
+            "Google Search Console",
+            "Canva",
+            "Google Ads",
+            "Meta Business Suite",
+            "SEO Tools"
         ],
+
         projects: [
-            "Short animation",
-            "Motion graphics video",
-            "Character animation",
-            "3D scene"
+            "SEO Website",
+            "Social Media Campaign",
+            "Keyword Research Project",
+            "Digital Marketing Campaign",
+            "Website Traffic Analysis"
         ],
+
         internship:
-            "Create a showreel and portfolio demonstrating animation skills.",
+            "Build a practical SEO or marketing project and apply for digital marketing internships.",
+
         careers: [
-            "Animator",
-            "3D Artist",
-            "Motion Designer",
-            "VFX Artist"
+            "Digital Marketing Specialist",
+            "SEO Specialist",
+            "Social Media Specialist",
+            "Marketing Analyst"
         ]
     },
 
 
-    // ==================================================
-    // MEDIA & COMMUNICATION
-    // ==================================================
+    // -------------------------------------------------
+    // PHOTOGRAPHER
+    // -------------------------------------------------
+
+    "photographer": {
+
+        category: "Creative and Media",
+
+        overview:
+            "A Photographer creates professional visual content using photography, lighting, composition and editing.",
+
+        prerequisites: [
+            "Interest in photography",
+            "Basic camera knowledge"
+        ],
+
+        skills: [
+            "Camera Handling",
+            "Composition",
+            "Lighting",
+            "Exposure",
+            "Portrait Photography",
+            "Product Photography",
+            "Event Photography",
+            "Photo Editing"
+        ],
+
+        tools: [
+            "DSLR or Mirrorless Camera",
+            "Tripod",
+            "Lighting Equipment",
+            "Adobe Lightroom",
+            "Adobe Photoshop"
+        ],
+
+        projects: [
+            "Portrait Portfolio",
+            "Product Photography Project",
+            "Event Photography Portfolio",
+            "Street Photography Collection"
+        ],
+
+        internship:
+            "Build a photography portfolio and approach studios, media companies and creative agencies.",
+
+        careers: [
+            "Photographer",
+            "Product Photographer",
+            "Event Photographer",
+            "Portrait Photographer"
+        ]
+    },
+
+
+    // -------------------------------------------------
+    // ACTOR
+    // -------------------------------------------------
 
     "actor": {
-        category: "Media & Entertainment",
-        title: "Actor",
+
+        category: "Media and Entertainment",
+
         overview:
-            "Actors perform characters for films, television, theatre, advertisements, web series and digital media.",
+            "An Actor performs characters for films, television, theatre, advertisements and digital productions.",
+
         prerequisites: [
-            "Interest in acting",
-            "Communication skills",
-            "Willingness to practice"
+            "Interest in performing",
+            "Willingness to practice",
+            "Communication skills"
         ],
+
         skills: [
             "Acting",
-            "Voice modulation",
-            "Body language",
-            "Dialogue delivery",
+            "Voice Modulation",
+            "Body Language",
+            "Dialogue Delivery",
             "Improvisation",
-            "Emotional expression",
-            "Audition skills"
+            "Emotional Expression",
+            "Audition Skills",
+            "Character Development"
         ],
+
         tools: [
             "Camera",
             "Microphone",
-            "Video editing software",
-            "Audition platforms"
+            "Tripod",
+            "Video Editing Software",
+            "Audition Platforms"
         ],
+
         projects: [
-            "Self-tape audition",
-            "Short film",
-            "Monologue portfolio",
-            "Theatre performance"
+            "Self-tape Audition",
+            "Monologue Portfolio",
+            "Short Film",
+            "Theatre Performance",
+            "Acting Showreel"
         ],
+
         internship:
-            "Participate in theatre, student films, short films and legitimate auditions. Build a professional showreel.",
+            "Prepare a showreel and self-tape portfolio and look for theatre, production and acting opportunities.",
+
         careers: [
             "Film Actor",
             "Television Actor",
@@ -752,1069 +868,1298 @@ const careerProfiles = {
         ]
     },
 
-    "content writer": {
-        category: "Media & Communication",
-        title: "Content Writer",
-        overview:
-            "Content Writers create useful written content for websites, blogs, brands, social media and digital platforms.",
-        prerequisites: [
-            "Good language skills",
-            "Research ability",
-            "Basic computer skills"
-        ],
-        skills: [
-            "Writing",
-            "Research",
-            "SEO",
-            "Editing",
-            "Copywriting",
-            "Storytelling"
-        ],
-        tools: [
-            "Google Docs",
-            "WordPress",
-            "Grammarly",
-            "Search Console"
-        ],
-        projects: [
-            "Personal blog",
-            "SEO articles",
-            "Product descriptions",
-            "Social media content calendar"
-        ],
-        internship:
-            "Publish original articles and create a writing portfolio.",
-        careers: [
-            "Content Writer",
-            "Copywriter",
-            "SEO Writer",
-            "Technical Writer",
-            "Content Strategist"
-        ]
-    },
 
-    "journalist": {
-        category: "Media & Communication",
-        title: "Journalist",
-        overview:
-            "Journalists research, verify and communicate news and information through various media.",
-        prerequisites: [
-            "Strong communication",
-            "Research skills",
-            "Interest in current affairs"
-        ],
-        skills: [
-            "News writing",
-            "Research",
-            "Interviewing",
-            "Fact checking",
-            "Video journalism",
-            "Digital journalism"
-        ],
-        tools: [
-            "Google Docs",
-            "CMS platforms",
-            "Camera",
-            "Audio recorder"
-        ],
-        projects: [
-            "Student news portal",
-            "Interview series",
-            "Local news reporting",
-            "Podcast"
-        ],
-        internship:
-            "Build reporting experience through student publications, digital media and journalism internships.",
-        careers: [
-            "Journalist",
-            "Reporter",
-            "News Writer",
-            "Digital Journalist",
-            "Editor"
-        ]
-    },
-
-    "photographer": {
-        category: "Media & Entertainment",
-        title: "Photographer",
-        overview:
-            "Photographers create images for journalism, advertising, events, fashion, products and creative projects.",
-        prerequisites: [
-            "Interest in photography",
-            "Basic camera knowledge"
-        ],
-        skills: [
-            "Composition",
-            "Lighting",
-            "Camera operation",
-            "Photo editing",
-            "Visual storytelling"
-        ],
-        tools: [
-            "Camera",
-            "Lightroom",
-            "Photoshop",
-            "Tripod"
-        ],
-        projects: [
-            "Photography portfolio",
-            "Portrait series",
-            "Product photography",
-            "Event photography"
-        ],
-        internship:
-            "Create a portfolio and gain practical experience through events, studios and media organizations.",
-        careers: [
-            "Photographer",
-            "Photojournalist",
-            "Product Photographer",
-            "Fashion Photographer"
-        ]
-    },
-
-
-    // ==================================================
-    // BUSINESS
-    // ==================================================
-
-    "business analyst": {
-        category: "Business",
-        title: "Business Analyst",
-        overview:
-            "Business Analysts analyze business requirements, processes and data to help organizations improve operations.",
-        prerequisites: [
-            "Basic business knowledge",
-            "Analytical thinking"
-        ],
-        skills: [
-            "Business analysis",
-            "Excel",
-            "SQL",
-            "Data visualization",
-            "Requirements gathering",
-            "Communication"
-        ],
-        tools: [
-            "Excel",
-            "Power BI",
-            "Jira",
-            "Confluence"
-        ],
-        projects: [
-            "Business process analysis",
-            "Sales dashboard",
-            "Requirement document",
-            "Business case study"
-        ],
-        internship:
-            "Build analytical case studies and learn requirement gathering.",
-        careers: [
-            "Business Analyst",
-            "Product Analyst",
-            "Business Consultant",
-            "Operations Analyst"
-        ]
-    },
-
-    "digital marketing specialist": {
-        category: "Business",
-        title: "Digital Marketing Specialist",
-        overview:
-            "Digital Marketing Specialists promote products, services and brands through digital channels.",
-        prerequisites: [
-            "Basic internet knowledge",
-            "Communication skills"
-        ],
-        skills: [
-            "SEO",
-            "SEM",
-            "Social Media Marketing",
-            "Content Marketing",
-            "Email Marketing",
-            "Analytics"
-        ],
-        tools: [
-            "Google Analytics",
-            "Google Search Console",
-            "Canva",
-            "Google Ads"
-        ],
-        projects: [
-            "SEO website",
-            "Social media campaign",
-            "Content strategy",
-            "Marketing analytics dashboard"
-        ],
-        internship:
-            "Run practical campaigns and create a measurable marketing portfolio.",
-        careers: [
-            "Digital Marketing Specialist",
-            "SEO Specialist",
-            "Social Media Manager",
-            "Content Marketer"
-        ]
-    },
-
-
-    // ==================================================
-    // COMMERCE & FINANCE
-    // ==================================================
-
-    "accountant": {
-        category: "Commerce & Finance",
-        title: "Accountant",
-        overview:
-            "Accountants manage financial records, transactions, reports and compliance.",
-        prerequisites: [
-            "Basic accounting",
-            "Commerce fundamentals"
-        ],
-        skills: [
-            "Accounting",
-            "Bookkeeping",
-            "Excel",
-            "GST basics",
-            "Financial reporting"
-        ],
-        tools: [
-            "Tally",
-            "Excel",
-            "Accounting software"
-        ],
-        projects: [
-            "Sample business accounts",
-            "Financial statement analysis",
-            "Accounting spreadsheet"
-        ],
-        internship:
-            "Gain practical experience with accounting systems and financial documentation.",
-        careers: [
-            "Accountant",
-            "Accounts Executive",
-            "Finance Assistant",
-            "Tax Assistant"
-        ]
-    },
-
-    "financial analyst": {
-        category: "Commerce & Finance",
-        title: "Financial Analyst",
-        overview:
-            "Financial Analysts analyze financial information to support investment and business decisions.",
-        prerequisites: [
-            "Basic finance",
-            "Mathematics"
-        ],
-        skills: [
-            "Financial analysis",
-            "Excel",
-            "Financial modeling",
-            "Accounting",
-            "Data analysis"
-        ],
-        tools: [
-            "Excel",
-            "Power BI",
-            "Financial databases"
-        ],
-        projects: [
-            "Company financial analysis",
-            "Financial model",
-            "Investment research report"
-        ],
-        internship:
-            "Create financial analysis reports and learn financial modeling.",
-        careers: [
-            "Financial Analyst",
-            "Investment Analyst",
-            "FP&A Analyst",
-            "Credit Analyst"
-        ]
-    },
-
-    "chartered accountant": {
-        category: "Commerce & Finance",
-        title: "Chartered Accountant",
-        overview:
-            "Chartered Accountants work across accounting, auditing, taxation, finance and advisory.",
-        prerequisites: [
-            "Commerce or equivalent foundation",
-            "Interest in accounting and finance"
-        ],
-        skills: [
-            "Accounting",
-            "Auditing",
-            "Taxation",
-            "Financial Reporting",
-            "Corporate Law",
-            "Financial Analysis"
-        ],
-        tools: [
-            "Excel",
-            "Accounting software",
-            "Tally"
-        ],
-        projects: [
-            "Financial statement analysis",
-            "Tax calculation practice",
-            "Audit case study"
-        ],
-        internship:
-            "Follow the applicable professional qualification pathway and gain practical training experience.",
-        careers: [
-            "Chartered Accountant",
-            "Auditor",
-            "Tax Consultant",
-            "Financial Consultant"
-        ]
-    },
-
-
-    // ==================================================
-    // ENGINEERING
-    // ==================================================
-
-    "mechanical engineer": {
-        category: "Engineering",
-        title: "Mechanical Engineer",
-        overview:
-            "Mechanical Engineers design, analyze and develop machines, products and mechanical systems.",
-        prerequisites: [
-            "Physics",
-            "Mathematics",
-            "Engineering fundamentals"
-        ],
-        skills: [
-            "CAD",
-            "Mechanical Design",
-            "Thermodynamics",
-            "Manufacturing",
-            "Engineering Drawing"
-        ],
-        tools: [
-            "AutoCAD",
-            "SolidWorks",
-            "CATIA",
-            "MATLAB"
-        ],
-        projects: [
-            "Mechanical prototype",
-            "CAD model",
-            "Automation project",
-            "Product design"
-        ],
-        internship:
-            "Gain practical exposure through manufacturing, automotive, design or engineering organizations.",
-        careers: [
-            "Mechanical Engineer",
-            "Design Engineer",
-            "Production Engineer",
-            "Automotive Engineer"
-        ]
-    },
-
-    "civil engineer": {
-        category: "Engineering",
-        title: "Civil Engineer",
-        overview:
-            "Civil Engineers design and manage infrastructure such as buildings, roads, bridges and water systems.",
-        prerequisites: [
-            "Mathematics",
-            "Physics",
-            "Engineering fundamentals"
-        ],
-        skills: [
-            "Structural design",
-            "AutoCAD",
-            "Surveying",
-            "Construction management",
-            "Quantity estimation"
-        ],
-        tools: [
-            "AutoCAD",
-            "STAAD.Pro",
-            "Revit",
-            "Civil 3D"
-        ],
-        projects: [
-            "Building design",
-            "Structural model",
-            "Road design",
-            "Construction estimation"
-        ],
-        internship:
-            "Gain site and design experience through construction and infrastructure organizations.",
-        careers: [
-            "Civil Engineer",
-            "Structural Engineer",
-            "Site Engineer",
-            "Project Engineer"
-        ]
-    },
-
-    "electrical engineer": {
-        category: "Engineering",
-        title: "Electrical Engineer",
-        overview:
-            "Electrical Engineers work with electrical systems, power systems, control systems and electronics.",
-        prerequisites: [
-            "Mathematics",
-            "Physics",
-            "Electrical fundamentals"
-        ],
-        skills: [
-            "Circuit analysis",
-            "Power systems",
-            "Control systems",
-            "Electrical design",
-            "MATLAB"
-        ],
-        tools: [
-            "MATLAB",
-            "AutoCAD Electrical",
-            "ETAP"
-        ],
-        projects: [
-            "Smart energy system",
-            "Home automation",
-            "Solar power project",
-            "Motor control system"
-        ],
-        internship:
-            "Gain practical exposure through power, automation, manufacturing or electrical engineering companies.",
-        careers: [
-            "Electrical Engineer",
-            "Power Engineer",
-            "Control Engineer",
-            "Electrical Design Engineer"
-        ]
-    },
-
-    "electronics engineer": {
-        category: "Engineering",
-        title: "Electronics Engineer",
-        overview:
-            "Electronics Engineers design and develop electronic circuits, embedded systems and devices.",
-        prerequisites: [
-            "Mathematics",
-            "Physics",
-            "Electronics fundamentals"
-        ],
-        skills: [
-            "Circuit design",
-            "Embedded systems",
-            "Microcontrollers",
-            "PCB design",
-            "Digital electronics"
-        ],
-        tools: [
-            "Arduino",
-            "Raspberry Pi",
-            "KiCad",
-            "MATLAB"
-        ],
-        projects: [
-            "IoT device",
-            "Smart home system",
-            "Embedded controller",
-            "Sensor project"
-        ],
-        internship:
-            "Build embedded and IoT projects and seek internships in electronics and embedded companies.",
-        careers: [
-            "Electronics Engineer",
-            "Embedded Engineer",
-            "IoT Engineer",
-            "Hardware Engineer"
-        ]
-    },
-
-
-    // ==================================================
-    // HEALTHCARE
-    // ==================================================
-
-    "doctor": {
-        category: "Healthcare",
-        title: "Doctor",
-        overview:
-            "Doctors diagnose and manage medical conditions after completing the required medical education and licensing pathway.",
-        prerequisites: [
-            "Biology",
-            "Chemistry",
-            "Physics"
-        ],
-        skills: [
-            "Medical knowledge",
-            "Clinical reasoning",
-            "Communication",
-            "Patient care"
-        ],
-        tools: [
-            "Medical equipment",
-            "Electronic health records",
-            "Diagnostic tools"
-        ],
-        projects: [
-            "Medical research project",
-            "Health awareness campaign",
-            "Clinical case study"
-        ],
-        internship:
-            "Follow the applicable medical education, clinical training and licensing requirements.",
-        careers: [
-            "Doctor",
-            "Medical Officer",
-            "Specialist",
-            "Medical Researcher"
-        ]
-    },
-
-    "pharmacist": {
-        category: "Healthcare",
-        title: "Pharmacist",
-        overview:
-            "Pharmacists work with medicines, dispensing, pharmaceutical information and patient guidance within their professional scope.",
-        prerequisites: [
-            "Chemistry",
-            "Biology",
-            "Pharmaceutical science"
-        ],
-        skills: [
-            "Pharmacology",
-            "Drug information",
-            "Dispensing",
-            "Pharmaceutical science"
-        ],
-        tools: [
-            "Pharmacy management systems",
-            "Laboratory equipment"
-        ],
-        projects: [
-            "Drug information project",
-            "Pharmacy management project",
-            "Healthcare awareness project"
-        ],
-        internship:
-            "Complete the required professional education and practical training.",
-        careers: [
-            "Pharmacist",
-            "Clinical Pharmacist",
-            "Pharmaceutical Researcher",
-            "Drug Safety Associate"
-        ]
-    },
-
-
-    // ==================================================
-    // EDUCATION
-    // ==================================================
-
-    "teacher": {
-        category: "Education",
-        title: "Teacher",
-        overview:
-            "Teachers help students learn academic subjects and develop knowledge and skills.",
-        prerequisites: [
-            "Subject knowledge",
-            "Communication skills"
-        ],
-        skills: [
-            "Teaching",
-            "Communication",
-            "Lesson planning",
-            "Classroom management",
-            "Digital teaching"
-        ],
-        tools: [
-            "Google Classroom",
-            "Microsoft Teams",
-            "PowerPoint",
-            "Digital whiteboards"
-        ],
-        projects: [
-            "Online lesson",
-            "Teaching portfolio",
-            "Educational video",
-            "Student activity"
-        ],
-        internship:
-            "Gain teaching experience through schools, educational organizations or tutoring programs.",
-        careers: [
-            "Teacher",
-            "Tutor",
-            "Online Educator",
-            "Academic Coordinator"
-        ]
-    },
-
-
-    // ==================================================
-    // LAW
-    // ==================================================
-
-    "lawyer": {
-        category: "Law",
-        title: "Lawyer",
-        overview:
-            "Lawyers provide legal services and represent clients within the applicable legal framework.",
-        prerequisites: [
-            "Strong communication",
-            "Reading ability",
-            "Interest in law"
-        ],
-        skills: [
-            "Legal research",
-            "Legal writing",
-            "Case analysis",
-            "Communication",
-            "Negotiation"
-        ],
-        tools: [
-            "Legal databases",
-            "Document management software"
-        ],
-        projects: [
-            "Legal research paper",
-            "Case analysis",
-            "Moot court",
-            "Legal awareness project"
-        ],
-        internship:
-            "Gain experience through law firms, legal departments, courts or legal organizations as permitted.",
-        careers: [
-            "Lawyer",
-            "Legal Associate",
-            "Legal Consultant",
-            "Corporate Counsel"
-        ]
-    },
-
-
-    // ==================================================
-    // HOSPITALITY
-    // ==================================================
+    // -------------------------------------------------
+    // CHEF
+    // -------------------------------------------------
 
     "chef": {
-        category: "Hospitality",
-        title: "Chef",
+
+        category: "Hospitality and Culinary",
+
         overview:
-            "Chefs plan, prepare and present food while managing kitchen operations and food safety.",
+            "A Chef prepares food professionally and develops skills in cooking, kitchen management, food safety and menu planning.",
+
         prerequisites: [
             "Interest in cooking",
-            "Creativity",
-            "Food safety awareness"
+            "Basic kitchen awareness"
         ],
+
         skills: [
-            "Cooking",
-            "Food preparation",
-            "Menu planning",
-            "Food safety",
-            "Kitchen management"
+            "Cooking Fundamentals",
+            "Knife Skills",
+            "Food Safety",
+            "Kitchen Hygiene",
+            "Ingredient Preparation",
+            "Recipe Development",
+            "Plating",
+            "Menu Planning"
         ],
+
         tools: [
-            "Kitchen equipment",
-            "Recipe management tools"
+            "Chef Knife",
+            "Cutting Board",
+            "Cookware",
+            "Oven",
+            "Food Thermometer",
+            "Kitchen Equipment"
         ],
+
         projects: [
-            "Personal recipe portfolio",
-            "Menu design",
-            "Food presentation project"
+            "Recipe Portfolio",
+            "Multi-Cuisine Menu",
+            "Dessert Collection",
+            "Food Presentation Project",
+            "Personal Cooking Portfolio"
         ],
+
         internship:
-            "Gain practical experience through restaurants, hotels, catering companies or culinary programs.",
+            "Build practical kitchen experience through restaurants, hotels, bakeries and culinary training opportunities.",
+
         careers: [
             "Chef",
+            "Commis Chef",
             "Sous Chef",
             "Pastry Chef",
-            "Culinary Specialist"
+            "Restaurant Chef"
         ]
     },
 
 
-    // ==================================================
-    // AVIATION
-    // ==================================================
+    // -------------------------------------------------
+    // TEACHER
+    // -------------------------------------------------
 
-    "pilot": {
-        category: "Aviation",
-        title: "Pilot",
+    "teacher": {
+
+        category: "Education",
+
         overview:
-            "Pilots operate aircraft after completing the applicable training, examinations and licensing requirements.",
+            "A Teacher helps students learn through subject knowledge, lesson planning, communication and assessment.",
+
         prerequisites: [
-            "Physics",
-            "Mathematics",
-            "Medical eligibility",
-            "Required aviation training"
+            "Strong subject knowledge",
+            "Communication skills"
         ],
+
         skills: [
-            "Flight operations",
-            "Navigation",
+            "Subject Knowledge",
             "Communication",
-            "Decision making",
-            "Aviation safety"
+            "Lesson Planning",
+            "Classroom Management",
+            "Assessment",
+            "Presentation",
+            "Student Engagement",
+            "Educational Technology"
         ],
+
         tools: [
-            "Flight simulator",
-            "Navigation systems",
-            "Aircraft instruments"
+            "PowerPoint",
+            "Google Classroom",
+            "Microsoft Teams",
+            "Zoom",
+            "Digital Whiteboard"
         ],
+
         projects: [
-            "Flight planning exercises",
-            "Aviation research",
-            "Simulator training"
+            "Lesson Plan",
+            "Teaching Demonstration",
+            "Online Learning Module",
+            "Educational Presentation",
+            "Student Assessment Plan"
         ],
+
         internship:
-            "Follow the applicable aviation authority's training and licensing requirements.",
+            "Gain teaching experience through schools, tutoring centres, online tutoring and education organizations.",
+
         careers: [
-            "Commercial Pilot",
-            "Flight Instructor",
-            "Airline Pilot",
-            "Charter Pilot"
-        ]
-    },
-
-
-    // ==================================================
-    // SPORTS & FITNESS
-    // ==================================================
-
-    "fitness trainer": {
-        category: "Sports & Fitness",
-        title: "Fitness Trainer",
-        overview:
-            "Fitness Trainers help clients develop exercise routines and healthy fitness habits within their professional scope.",
-        prerequisites: [
-            "Interest in fitness",
-            "Basic anatomy knowledge"
-        ],
-        skills: [
-            "Exercise programming",
-            "Basic anatomy",
-            "Communication",
-            "Fitness assessment"
-        ],
-        tools: [
-            "Fitness tracking apps",
-            "Heart-rate monitors",
-            "Gym equipment"
-        ],
-        projects: [
-            "Workout plan",
-            "Fitness portfolio",
-            "Exercise education content"
-        ],
-        internship:
-            "Gain supervised practical experience and pursue appropriate fitness certifications.",
-        careers: [
-            "Fitness Trainer",
-            "Personal Trainer",
-            "Fitness Coach",
-            "Strength Coach"
-        ]
-    },
-
-
-    // ==================================================
-    // MUSIC
-    // ==================================================
-
-    "musician": {
-        category: "Music",
-        title: "Musician",
-        overview:
-            "Musicians perform, compose, arrange or produce music across live and digital environments.",
-        prerequisites: [
-            "Interest in music",
-            "Practice discipline"
-        ],
-        skills: [
-            "Instrument or vocal skills",
-            "Music theory",
-            "Performance",
-            "Composition",
-            "Music production"
-        ],
-        tools: [
-            "DAW",
-            "Microphone",
-            "Audio interface",
-            "Musical instruments"
-        ],
-        projects: [
-            "Original song",
-            "Music cover",
-            "Live performance",
-            "Music production project"
-        ],
-        internship:
-            "Build a portfolio through performances, recordings and collaborations.",
-        careers: [
-            "Musician",
-            "Singer",
-            "Composer",
-            "Music Producer",
-            "Session Artist"
+            "Teacher",
+            "Online Tutor",
+            "Academic Trainer",
+            "Lecturer"
         ]
     }
+
 };
 
 
-// ======================================================
-// SEARCH ALIASES
-// ======================================================
+// =====================================================
+// ALIASES
+// =====================================================
 
-const aliases = {
+const careerAliases = {
 
-    // Technology
-    "web developer": "full stack developer",
-    "web development": "full stack developer",
-    "software developer": "full stack developer",
-    "software development": "full stack developer",
-    "react developer": "frontend developer",
-    "frontend": "frontend developer",
-    "front end": "frontend developer",
-    "backend": "backend developer",
-    "back end": "backend developer",
-    "app developer": "mobile app developer",
-    "android developer": "mobile app developer",
+    "java": "java developer",
+    "java development": "java developer",
+    "java programmer": "java developer",
+
     "python": "python developer",
+    "python programming": "python developer",
 
-    // AI
-    "ai": "artificial intelligence engineer",
-    "artificial intelligence": "artificial intelligence engineer",
-    "ai engineer": "artificial intelligence engineer",
-    "machine learning": "machine learning engineer",
-    "ml": "machine learning engineer",
-    "data science": "data scientist",
-    "data scientist": "data scientist",
-    "data analytics": "data analyst",
-    "data analysis": "data analyst",
-
-    // Cybersecurity
-    "cyber security": "cybersecurity analyst",
     "cybersecurity": "cybersecurity analyst",
+    "cyber security": "cybersecurity analyst",
     "cyber security analyst": "cybersecurity analyst",
+
     "ethical hacking": "ethical hacker",
-    "hacking": "ethical hacker",
     "penetration testing": "ethical hacker",
     "pentesting": "ethical hacker",
-    "cloud security": "cloud security engineer",
 
-    // Design
-    "ui ux": "ui/ux designer",
-    "ui/ux": "ui/ux designer",
-    "ui ux designer": "ui/ux designer",
-    "ux": "ui/ux designer",
-    "ui": "ui/ux designer",
-    "graphic design": "graphic designer",
-    "animation": "animator",
-    "3d animation": "animator",
-    "motion graphics": "animator",
-
-    // Writing / media
-    "writing": "content writer",
-    "writer": "content writer",
     "content writing": "content writer",
+    "writing": "content writer",
     "copywriting": "content writer",
-    "seo writing": "content writer",
-    "journalism": "journalist",
-    "news": "journalist",
+
+    "digital marketing": "digital marketing specialist",
+    "seo": "digital marketing specialist",
+    "seo specialist": "digital marketing specialist",
+
     "acting": "actor",
     "film acting": "actor",
-    "cinema": "actor",
+
     "photography": "photographer",
-    "photographer": "photographer",
 
-    // Business
-    "business analysis": "business analyst",
-    "business analyst": "business analyst",
-    "digital marketing": "digital marketing specialist",
-    "marketing": "digital marketing specialist",
-    "seo": "digital marketing specialist",
-    "social media marketing": "digital marketing specialist",
-
-    // Finance
-    "accounting": "accountant",
-    "accounts": "accountant",
-    "finance": "financial analyst",
-    "financial analysis": "financial analyst",
-    "ca": "chartered accountant",
-    "chartered accountancy": "chartered accountant",
-
-    // Engineering
-    "mechanical": "mechanical engineer",
-    "mechanical engineering": "mechanical engineer",
-    "civil": "civil engineer",
-    "civil engineering": "civil engineer",
-    "electrical": "electrical engineer",
-    "electrical engineering": "electrical engineer",
-    "electronics": "electronics engineer",
-    "electronics engineering": "electronics engineer",
-
-    // Healthcare
-    "medicine": "doctor",
-    "medical": "doctor",
-    "mbbs": "doctor",
-    "pharmacy": "pharmacist",
-    "pharmacist": "pharmacist",
-
-    // Education
-    "teaching": "teacher",
-    "teacher": "teacher",
-    "teaching career": "teacher",
-
-    // Law
-    "law": "lawyer",
-    "legal": "lawyer",
-    "lawyer": "lawyer",
-
-    // Hospitality
     "cooking": "chef",
     "cook": "chef",
-    "chef": "chef",
-    "culinary": "chef",
+    "baking": "chef",
+    "culinary arts": "chef",
 
-    // Aviation
-    "aviation": "pilot",
-    "pilot": "pilot",
-    "piloting": "pilot",
-
-    // Fitness
-    "fitness": "fitness trainer",
-    "gym trainer": "fitness trainer",
-    "personal trainer": "fitness trainer",
-    "sports fitness": "fitness trainer",
-
-    // Music
-    "music": "musician",
-    "singing": "musician",
-    "singer": "musician",
-    "musician": "musician"
+    "teaching": "teacher",
+    "education": "teacher"
 };
 
 
-// ======================================================
-// FIND CAREER
-// ======================================================
+// =====================================================
+// NORMALIZE INPUT
+// =====================================================
+
+function normalizeCourse(course) {
+
+    return String(course || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+}
+
+
+// =====================================================
+// FIND EXISTING CAREER
+// =====================================================
 
 function findCareer(course) {
 
-    const original = String(course || "").trim();
+    const normalized = normalizeCourse(course);
 
-    if (!original) {
-        return null;
-    }
+    console.log("Searching career:", normalized);
 
-    const normalized = original
-        .toLowerCase()
-        .replace(/\s+/g, " ")
-        .trim();
 
-    // Exact profile
+    // Exact match
     if (careerProfiles[normalized]) {
+
+        console.log(
+            "Direct career match:",
+            normalized
+        );
+
         return careerProfiles[normalized];
     }
 
-    // Alias
-    if (aliases[normalized]) {
-        return careerProfiles[aliases[normalized]];
+
+    // Alias match
+    if (careerAliases[normalized]) {
+
+        const alias =
+            careerAliases[normalized];
+
+        console.log(
+            "Alias career match:",
+            alias
+        );
+
+        return careerProfiles[alias];
     }
 
-    // Partial matching
+
+    // Partial match
     for (const key of Object.keys(careerProfiles)) {
+
         if (
             normalized.includes(key) ||
             key.includes(normalized)
         ) {
+
+            console.log(
+                "Partial career match:",
+                key
+            );
+
             return careerProfiles[key];
         }
     }
 
-    // Partial alias matching
-    for (const alias of Object.keys(aliases)) {
-        if (
-            normalized.includes(alias) ||
-            alias.includes(normalized)
-        ) {
-            return careerProfiles[aliases[alias]];
-        }
-    }
+
+    console.log(
+        "No predefined career match."
+    );
 
     return null;
 }
 
 
-// ======================================================
-// GENERIC CAREER GENERATOR
-// ======================================================
+// =====================================================
+// DYNAMIC CAREER GENERATOR
+// =====================================================
 
 function createGenericCareer(course) {
 
-    const title = String(course)
-        .trim()
-        .replace(/\b\w/g, letter => letter.toUpperCase());
+    const original =
+        String(course || "").trim();
+
+    const lower =
+        normalizeCourse(original);
+
+    const title =
+        original.charAt(0).toUpperCase() +
+        original.slice(1);
+
+
+    // -------------------------------------------------
+    // BEAUTY
+    // -------------------------------------------------
+
+    if (
+        lower.includes("beautician") ||
+        lower.includes("beauty") ||
+        lower.includes("makeup") ||
+        lower.includes("cosmetology") ||
+        lower.includes("hair stylist") ||
+        lower.includes("hairdresser") ||
+        lower.includes("skincare") ||
+        lower.includes("skin care")
+    ) {
+
+        return {
+
+            category: "Beauty and Wellness",
+
+            overview:
+                `${title} focuses on professional beauty, grooming, skincare, haircare and personal styling services.`,
+
+            prerequisites: [
+                "Interest in beauty and wellness",
+                "Basic hygiene knowledge"
+            ],
+
+            skills: [
+                "Skin Care Fundamentals",
+                "Hair Care",
+                "Makeup Techniques",
+                "Facial Treatments",
+                "Hair Styling",
+                "Hygiene and Sanitation",
+                "Client Consultation",
+                "Product Knowledge"
+            ],
+
+            tools: [
+                "Makeup Brushes",
+                "Beauty Products",
+                "Hair Styling Tools",
+                "Facial Equipment",
+                "Sanitation Equipment"
+            ],
+
+            projects: [
+                "Makeup Look Portfolio",
+                "Bridal Makeup Project",
+                "Hair Styling Portfolio",
+                "Skincare Routine Project",
+                "Beauty Transformation Portfolio"
+            ],
+
+            internship:
+                "Gain practical experience through salons, spas, beauty studios and professional beauty training.",
+
+            careers: [
+                "Beautician",
+                "Makeup Artist",
+                "Hair Stylist",
+                "Beauty Consultant",
+                "Salon Professional",
+                "Skincare Specialist"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // CONTENT WRITING
+    // -------------------------------------------------
+
+    if (
+        lower.includes("content writing") ||
+        lower.includes("content writer") ||
+        lower.includes("copywriter") ||
+        lower.includes("blog writer")
+    ) {
+
+        return {
+
+            category: "Writing and Media",
+
+            overview:
+                `${title} focuses on creating clear, useful and engaging written content for digital platforms, businesses and publications.`,
+
+            prerequisites: [
+                "Interest in writing",
+                "Basic grammar",
+                "Research ability"
+            ],
+
+            skills: [
+                "Writing Fundamentals",
+                "Grammar",
+                "Research",
+                "Storytelling",
+                "SEO Writing",
+                "Keyword Research",
+                "Editing",
+                "Proofreading",
+                "Content Planning"
+            ],
+
+            tools: [
+                "Google Docs",
+                "Microsoft Word",
+                "Grammarly",
+                "Google Search",
+                "Canva",
+                "SEO Tools"
+            ],
+
+            projects: [
+                "Personal Blog",
+                "SEO Article Portfolio",
+                "Product Descriptions",
+                "Website Content",
+                "Social Media Content Plan"
+            ],
+
+            internship:
+                "Create a writing portfolio and apply for content writing, SEO writing and copywriting internships.",
+
+            careers: [
+                "Content Writer",
+                "SEO Writer",
+                "Copywriter",
+                "Technical Writer",
+                "Content Strategist"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // CYBERSECURITY
+    // -------------------------------------------------
+
+    if (
+        lower.includes("cyber") ||
+        lower.includes("ethical hack") ||
+        lower.includes("penetration test") ||
+        lower.includes("pentest") ||
+        lower.includes("information security")
+    ) {
+
+        return {
+
+            category: "Cybersecurity",
+
+            overview:
+                `${title} focuses on protecting systems, networks, applications and information from security threats.`,
+
+            prerequisites: [
+                "Basic computer knowledge",
+                "Basic networking knowledge"
+            ],
+
+            skills: [
+                "Networking",
+                "Linux",
+                "Cybersecurity Fundamentals",
+                "Threat Analysis",
+                "Vulnerability Assessment",
+                "Security Monitoring",
+                "Incident Response",
+                "Web Security"
+            ],
+
+            tools: [
+                "Linux",
+                "Wireshark",
+                "Nmap",
+                "Burp Suite",
+                "VirtualBox",
+                "SIEM Platforms"
+            ],
+
+            projects: [
+                "Network Security Lab",
+                "Vulnerability Assessment",
+                "Web Security Testing Lab",
+                "Security Monitoring Dashboard",
+                "Incident Response Simulation"
+            ],
+
+            internship:
+                "Build legal cybersecurity labs and apply for SOC, security analyst and cybersecurity internships.",
+
+            careers: [
+                "Cybersecurity Analyst",
+                "SOC Analyst",
+                "Security Analyst",
+                "Penetration Tester",
+                "Application Security Analyst"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // DIGITAL MARKETING
+    // -------------------------------------------------
+
+    if (
+        lower.includes("digital marketing") ||
+        lower.includes("seo") ||
+        lower.includes("social media marketing") ||
+        lower.includes("marketing")
+    ) {
+
+        return {
+
+            category: "Business and Marketing",
+
+            overview:
+                `${title} focuses on promoting brands, products and services through digital channels and online marketing strategies.`,
+
+            prerequisites: [
+                "Basic computer knowledge",
+                "Interest in marketing"
+            ],
+
+            skills: [
+                "SEO",
+                "Keyword Research",
+                "Content Marketing",
+                "Social Media Marketing",
+                "Email Marketing",
+                "Digital Advertising",
+                "Analytics",
+                "Conversion Optimization"
+            ],
+
+            tools: [
+                "Google Search Console",
+                "Google Analytics",
+                "Google Ads",
+                "Canva",
+                "Meta Business Suite",
+                "SEO Tools"
+            ],
+
+            projects: [
+                "SEO Website",
+                "Keyword Research Project",
+                "Social Media Campaign",
+                "Digital Marketing Campaign",
+                "Website Traffic Analysis"
+            ],
+
+            internship:
+                "Build an SEO or digital marketing project and apply for marketing internships.",
+
+            careers: [
+                "Digital Marketing Specialist",
+                "SEO Specialist",
+                "Social Media Specialist",
+                "Marketing Analyst"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // PHOTOGRAPHY
+    // -------------------------------------------------
+
+    if (
+        lower.includes("photograph")
+    ) {
+
+        return {
+
+            category: "Creative and Media",
+
+            overview:
+                `${title} focuses on creating professional photographs using camera techniques, composition, lighting and editing.`,
+
+            prerequisites: [
+                "Interest in photography",
+                "Basic camera knowledge"
+            ],
+
+            skills: [
+                "Camera Handling",
+                "Composition",
+                "Exposure",
+                "Lighting",
+                "Portrait Photography",
+                "Product Photography",
+                "Event Photography",
+                "Photo Editing"
+            ],
+
+            tools: [
+                "DSLR or Mirrorless Camera",
+                "Tripod",
+                "Lighting Equipment",
+                "Adobe Lightroom",
+                "Adobe Photoshop"
+            ],
+
+            projects: [
+                "Portrait Portfolio",
+                "Product Photography",
+                "Event Photography Portfolio",
+                "Street Photography Collection"
+            ],
+
+            internship:
+                "Build a photography portfolio and seek practical experience with studios, events and creative agencies.",
+
+            careers: [
+                "Photographer",
+                "Portrait Photographer",
+                "Product Photographer",
+                "Event Photographer",
+                "Photo Editor"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // ACTING
+    // -------------------------------------------------
+
+    if (
+        lower.includes("actor") ||
+        lower.includes("acting") ||
+        lower.includes("theatre") ||
+        lower.includes("theater") ||
+        lower.includes("performing arts")
+    ) {
+
+        return {
+
+            category: "Media and Entertainment",
+
+            overview:
+                `${title} focuses on performing characters for films, television, theatre, advertisements and digital productions.`,
+
+            prerequisites: [
+                "Interest in performing",
+                "Communication skills",
+                "Willingness to practice"
+            ],
+
+            skills: [
+                "Acting",
+                "Voice Modulation",
+                "Body Language",
+                "Dialogue Delivery",
+                "Improvisation",
+                "Emotional Expression",
+                "Character Development",
+                "Audition Preparation"
+            ],
+
+            tools: [
+                "Camera",
+                "Microphone",
+                "Tripod",
+                "Video Editing Software",
+                "Audition Platforms"
+            ],
+
+            projects: [
+                "Self-Tape Audition",
+                "Monologue Portfolio",
+                "Short Film",
+                "Theatre Performance",
+                "Acting Showreel"
+            ],
+
+            internship:
+                "Build a showreel and self-tape portfolio and look for theatre, production and acting opportunities.",
+
+            careers: [
+                "Film Actor",
+                "Television Actor",
+                "Theatre Artist",
+                "Voice Artist",
+                "Web Series Actor",
+                "Commercial Actor"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // CHEF / COOKING
+    // -------------------------------------------------
+
+    if (
+        lower.includes("chef") ||
+        lower.includes("cook") ||
+        lower.includes("culinary") ||
+        lower.includes("baking") ||
+        lower.includes("pastry")
+    ) {
+
+        return {
+
+            category: "Hospitality and Culinary",
+
+            overview:
+                `${title} focuses on professional food preparation, cooking techniques, kitchen management and food safety.`,
+
+            prerequisites: [
+                "Interest in cooking",
+                "Basic kitchen awareness"
+            ],
+
+            skills: [
+                "Cooking Fundamentals",
+                "Knife Skills",
+                "Food Safety",
+                "Kitchen Hygiene",
+                "Ingredient Preparation",
+                "Cooking Techniques",
+                "Recipe Development",
+                "Plating",
+                "Menu Planning"
+            ],
+
+            tools: [
+                "Chef Knife",
+                "Cutting Board",
+                "Cookware",
+                "Oven",
+                "Food Thermometer",
+                "Kitchen Equipment"
+            ],
+
+            projects: [
+                "Recipe Portfolio",
+                "Multi-Cuisine Menu",
+                "Dessert Collection",
+                "Food Presentation Project",
+                "Personal Cooking Portfolio"
+            ],
+
+            internship:
+                "Gain practical kitchen experience through restaurants, hotels, bakeries and culinary training.",
+
+            careers: [
+                "Chef",
+                "Commis Chef",
+                "Sous Chef",
+                "Pastry Chef",
+                "Restaurant Chef"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // TEACHING
+    // -------------------------------------------------
+
+    if (
+        lower.includes("teacher") ||
+        lower.includes("teaching") ||
+        lower.includes("education") ||
+        lower.includes("lecturer") ||
+        lower.includes("professor")
+    ) {
+
+        return {
+
+            category: "Education",
+
+            overview:
+                `${title} focuses on teaching, lesson planning, communication, assessment and supporting student learning.`,
+
+            prerequisites: [
+                "Subject knowledge",
+                "Communication skills"
+            ],
+
+            skills: [
+                "Subject Knowledge",
+                "Communication",
+                "Lesson Planning",
+                "Classroom Management",
+                "Assessment",
+                "Presentation",
+                "Student Engagement",
+                "Educational Technology"
+            ],
+
+            tools: [
+                "PowerPoint",
+                "Google Classroom",
+                "Microsoft Teams",
+                "Zoom",
+                "Digital Whiteboard"
+            ],
+
+            projects: [
+                "Lesson Plan",
+                "Teaching Demonstration",
+                "Online Learning Module",
+                "Educational Presentation",
+                "Student Assessment Plan"
+            ],
+
+            internship:
+                "Gain teaching experience through schools, tutoring centres, online tutoring and education organizations.",
+
+            careers: [
+                "Teacher",
+                "Online Tutor",
+                "Academic Trainer",
+                "Lecturer"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // FINANCE
+    // -------------------------------------------------
+
+    if (
+        lower.includes("finance") ||
+        lower.includes("account") ||
+        lower.includes("banking") ||
+        lower.includes("investment")
+    ) {
+
+        return {
+
+            category: "Finance and Business",
+
+            overview:
+                `${title} focuses on financial analysis, accounting, reporting, business finance and decision-making.`,
+
+            prerequisites: [
+                "Basic mathematics",
+                "Interest in finance"
+            ],
+
+            skills: [
+                "Accounting Fundamentals",
+                "Financial Statements",
+                "Excel",
+                "Financial Analysis",
+                "Budgeting",
+                "Business Mathematics",
+                "Financial Reporting",
+                "Data Analysis"
+            ],
+
+            tools: [
+                "Microsoft Excel",
+                "Google Sheets",
+                "Tally",
+                "Power BI",
+                "Accounting Software"
+            ],
+
+            projects: [
+                "Company Financial Analysis",
+                "Budgeting Project",
+                "Financial Dashboard",
+                "Accounting Case Study"
+            ],
+
+            internship:
+                "Build practical financial analysis experience and apply for accounting, finance and banking internships.",
+
+            careers: [
+                "Accountant",
+                "Financial Analyst",
+                "Banking Associate",
+                "Finance Executive"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // ENGINEERING
+    // -------------------------------------------------
+
+    if (
+        lower.includes("engineering") ||
+        lower.includes("engineer") ||
+        lower.includes("mechanical") ||
+        lower.includes("civil") ||
+        lower.includes("electrical") ||
+        lower.includes("electronics") ||
+        lower.includes("automobile") ||
+        lower.includes("chemical engineering")
+    ) {
+
+        return {
+
+            category: "Engineering",
+
+            overview:
+                `${title} focuses on engineering fundamentals, practical problem-solving, technical tools, projects and industry preparation.`,
+
+            prerequisites: [
+                "Mathematics fundamentals",
+                "Basic science knowledge"
+            ],
+
+            skills: [
+                `${title} Fundamentals`,
+                "Engineering Mathematics",
+                "Problem Solving",
+                "Technical Drawing",
+                "Project Planning",
+                "Technical Documentation",
+                "Safety Practices",
+                "Industry Standards"
+            ],
+
+            tools: [
+                "AutoCAD",
+                "CAD Software",
+                "MATLAB",
+                "Microsoft Excel",
+                "Engineering Simulation Tools"
+            ],
+
+            projects: [
+                `${title} Mini Project`,
+                "Engineering Design Project",
+                "Simulation Project",
+                "Technical Documentation Project",
+                "Final Year Project"
+            ],
+
+            internship:
+                `Gain practical industry experience through ${title} internships, industrial training and engineering projects.`,
+
+            careers: [
+                `${title} Engineer`,
+                "Design Engineer",
+                "Project Engineer",
+                "Production Engineer",
+                "Technical Engineer"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // LAW
+    // -------------------------------------------------
+
+    if (
+        lower.includes("law") ||
+        lower.includes("legal") ||
+        lower.includes("lawyer") ||
+        lower.includes("advocate")
+    ) {
+
+        return {
+
+            category: "Law and Legal Services",
+
+            overview:
+                `${title} focuses on legal concepts, research, documentation, communication and practical legal work.`,
+
+            prerequisites: [
+                "Interest in law",
+                "Reading and research ability"
+            ],
+
+            skills: [
+                "Legal Research",
+                "Legal Writing",
+                "Case Analysis",
+                "Communication",
+                "Legal Documentation",
+                "Argumentation",
+                "Critical Thinking",
+                "Professional Ethics"
+            ],
+
+            tools: [
+                "Legal Databases",
+                "Microsoft Word",
+                "Google Docs",
+                "Research Databases"
+            ],
+
+            projects: [
+                "Case Analysis",
+                "Legal Research Report",
+                "Mock Legal Argument",
+                "Legal Document Drafting",
+                "Moot Court Project"
+            ],
+
+            internship:
+                "Seek internships with law firms, legal departments, courts and legal organizations.",
+
+            careers: [
+                "Lawyer",
+                "Advocate",
+                "Legal Associate",
+                "Legal Consultant",
+                "Corporate Legal Executive"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // AVIATION
+    // -------------------------------------------------
+
+    if (
+        lower.includes("pilot") ||
+        lower.includes("aviation") ||
+        lower.includes("airline")
+    ) {
+
+        return {
+
+            category: "Aviation",
+
+            overview:
+                `${title} focuses on aviation knowledge, safety procedures, communication, technical training and professional preparation.`,
+
+            prerequisites: [
+                "Interest in aviation",
+                "Required educational qualifications"
+            ],
+
+            skills: [
+                "Aviation Fundamentals",
+                "Flight Theory",
+                "Navigation",
+                "Meteorology",
+                "Communication",
+                "Aviation Safety",
+                "Emergency Procedures",
+                "Decision Making"
+            ],
+
+            tools: [
+                "Flight Simulator",
+                "Navigation Equipment",
+                "Aviation Charts",
+                "Communication Systems"
+            ],
+
+            projects: [
+                "Flight Planning Exercise",
+                "Navigation Exercise",
+                "Aviation Safety Study",
+                "Simulator Training Log"
+            ],
+
+            internship:
+                "Explore approved aviation training, airport operations and aviation industry opportunities.",
+
+            careers: [
+                "Commercial Pilot",
+                "Private Pilot",
+                "Flight Instructor",
+                "Aviation Operations Executive"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // FITNESS
+    // -------------------------------------------------
+
+    if (
+        lower.includes("fitness") ||
+        lower.includes("sports") ||
+        lower.includes("physical training")
+    ) {
+
+        return {
+
+            category: "Fitness and Sports",
+
+            overview:
+                `${title} focuses on exercise science, fitness planning, physical training and client support.`,
+
+            prerequisites: [
+                "Interest in fitness",
+                "Basic health and exercise awareness"
+            ],
+
+            skills: [
+                "Exercise Fundamentals",
+                "Fitness Assessment",
+                "Workout Planning",
+                "Strength Training",
+                "Cardio Training",
+                "Mobility",
+                "Basic Nutrition",
+                "Client Communication"
+            ],
+
+            tools: [
+                "Fitness Tracker",
+                "Heart Rate Monitor",
+                "Gym Equipment",
+                "Workout Planning Software"
+            ],
+
+            projects: [
+                "Workout Plan",
+                "Fitness Assessment",
+                "Personal Training Program",
+                "Fitness Progress Portfolio"
+            ],
+
+            internship:
+                "Gain practical experience through gyms, fitness centres, sports organizations and training programs.",
+
+            careers: [
+                "Fitness Trainer",
+                "Personal Trainer",
+                "Strength Coach",
+                "Fitness Consultant",
+                "Sports Trainer"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // DESIGN
+    // -------------------------------------------------
+
+    if (
+        lower.includes("design") ||
+        lower.includes("animation") ||
+        lower.includes("fashion") ||
+        lower.includes("graphic")
+    ) {
+
+        return {
+
+            category: "Design and Creative Arts",
+
+            overview:
+                `${title} focuses on creative design, visual communication, creative software and portfolio development.`,
+
+            prerequisites: [
+                "Creative interest",
+                "Basic computer skills"
+            ],
+
+            skills: [
+                "Design Fundamentals",
+                "Color Theory",
+                "Typography",
+                "Composition",
+                "Visual Communication",
+                "Creative Thinking",
+                "Portfolio Development",
+                "Client Communication"
+            ],
+
+            tools: [
+                "Adobe Photoshop",
+                "Adobe Illustrator",
+                "Figma",
+                "Canva",
+                "Blender"
+            ],
+
+            projects: [
+                "Personal Portfolio",
+                "Brand Identity Project",
+                "Poster Design",
+                "Social Media Design",
+                "Creative Campaign"
+            ],
+
+            internship:
+                "Build a design portfolio and apply for design, animation, fashion or creative internships.",
+
+            careers: [
+                "Graphic Designer",
+                "Visual Designer",
+                "Creative Designer",
+                "Animator",
+                "Fashion Designer"
+            ]
+        };
+    }
+
+
+    // -------------------------------------------------
+    // MUSIC
+    // -------------------------------------------------
+
+    if (
+        lower.includes("music") ||
+        lower.includes("musician") ||
+        lower.includes("singer") ||
+        lower.includes("songwriter")
+    ) {
+
+        return {
+
+            category: "Music and Performing Arts",
+
+            overview:
+                `${title} focuses on musical performance, practice, composition, recording and professional portfolio development.`,
+
+            prerequisites: [
+                "Interest in music",
+                "Regular practice"
+            ],
+
+            skills: [
+                "Music Fundamentals",
+                "Instrument or Vocal Skills",
+                "Rhythm",
+                "Performance",
+                "Music Theory",
+                "Composition",
+                "Recording",
+                "Stage Presence"
+            ],
+
+            tools: [
+                "Musical Instrument",
+                "Microphone",
+                "Audio Interface",
+                "DAW Software",
+                "Headphones"
+            ],
+
+            projects: [
+                "Original Song",
+                "Cover Performance",
+                "Music Portfolio",
+                "Live Performance",
+                "Recorded Music Project"
+            ],
+
+            internship:
+                "Build a music portfolio and seek practical experience through performances, studios and music organizations.",
+
+            careers: [
+                "Musician",
+                "Singer",
+                "Composer",
+                "Songwriter",
+                "Music Producer"
+            ]
+        };
+    }
+
+
+    // =================================================
+    // FINAL UNIVERSAL FALLBACK
+    // =================================================
 
     return {
-        category: "Other",
-        title: title,
+
+        category: "Career Development",
 
         overview:
-            `${title} is a career path that can be explored through education, practical learning, projects, internships and industry experience.`,
+            `${title} is a career path that requires foundational knowledge, practical skills, real-world experience and a professional portfolio.`,
 
         prerequisites: [
-            "Basic knowledge of the subject",
-            "Interest in the field",
+            `Basic knowledge related to ${title}`,
             "Communication skills",
-            "Willingness to learn"
+            "Research ability"
         ],
 
         skills: [
-            `${title} fundamentals`,
+            `${title} Fundamentals`,
+            `${title} Core Concepts`,
+            `${title} Practical Skills`,
             "Communication",
-            "Problem solving",
+            "Problem Solving",
             "Research",
-            "Digital skills",
-            "Professional skills"
+            "Professional Skills",
+            "Industry Knowledge"
         ],
 
         tools: [
-            "VS Code or suitable learning tools",
-            "Google",
-            "GitHub",
-            "Microsoft Office / Google Workspace"
+            `${title} Learning Resources`,
+            "Documentation and Reference Materials",
+            "Microsoft Office or Google Workspace",
+            "Portfolio Platform",
+            "Professional Networking Platforms"
         ],
 
         projects: [
-            `Beginner ${title} project`,
-            `Intermediate ${title} project`,
-            `Portfolio project`
+            `${title} Beginner Project`,
+            `${title} Practical Project`,
+            `${title} Portfolio Project`,
+            `${title} Real-World Case Study`
         ],
 
         internship:
-            `Look for internships, volunteering, projects and entry-level opportunities related to ${title}. Build a portfolio and document your practical work.`,
+            `Look for internships, apprenticeships, volunteering or entry-level opportunities related to ${title}.`,
 
         careers: [
             title,
             `${title} Specialist`,
             `${title} Associate`,
-            `${title} Consultant`
+            `${title} Professional`
         ]
     };
 }
 
 
-// ======================================================
+// =====================================================
 // BUILD ROADMAP
-// ======================================================
+// =====================================================
 
 function buildRoadmap(course) {
 
-    const profile = findCareer(course) || createGenericCareer(course);
+    const requestedCourse =
+        String(course || "").trim();
 
-    return {
+    const profile =
+        findCareer(requestedCourse) ||
+        createGenericCareer(requestedCourse);
 
-        title: profile.title,
+
+    const roadmap = {
+
+        title: requestedCourse,
 
         category: profile.category,
 
@@ -1824,157 +2169,318 @@ function buildRoadmap(course) {
 
         stages: [
 
+            // -----------------------------------------
+            // STAGE 1
+            // -----------------------------------------
+
             {
                 stage: 1,
+
                 title: "Foundation",
+
                 duration: "1-2 months",
+
                 skills: profile.prerequisites,
+
                 topics: [
-                    "Understand the fundamentals",
+                    `Understand the fundamentals of ${requestedCourse}`,
                     "Learn important terminology",
                     "Study basic concepts",
-                    "Practice regularly"
+                    "Create a regular learning schedule"
                 ]
             },
+
+
+            // -----------------------------------------
+            // STAGE 2
+            // -----------------------------------------
 
             {
                 stage: 2,
+
                 title: "Core Skills",
+
                 duration: "2-3 months",
+
                 skills: profile.skills,
+
                 topics: [
                     "Learn the core skills",
                     "Practice with examples",
-                    "Follow structured tutorials",
-                    "Solve practical problems"
+                    "Follow structured learning resources",
+                    "Complete practical exercises"
                 ]
             },
 
+
+            // -----------------------------------------
+            // STAGE 3
+            // -----------------------------------------
+
             {
                 stage: 3,
+
                 title: "Tools & Practical Learning",
+
                 duration: "1-3 months",
+
                 skills: profile.tools,
+
                 topics: [
-                    "Learn industry tools",
-                    "Build small projects",
+                    "Learn the relevant tools",
                     "Practice real-world workflows",
+                    "Complete guided exercises",
                     "Document your work"
                 ]
             },
 
+
+            // -----------------------------------------
+            // STAGE 4
+            // -----------------------------------------
+
             {
                 stage: 4,
+
                 title: "Projects & Portfolio",
+
                 duration: "1-3 months",
+
                 skills: [
-                    "Project development",
-                    "Problem solving",
+                    "Project Development",
+                    "Problem Solving",
                     "Documentation",
                     "Presentation"
                 ],
+
                 topics: profile.projects
             },
 
+
+            // -----------------------------------------
+            // STAGE 5
+            // -----------------------------------------
+
             {
                 stage: 5,
+
                 title: "Internship & Career Preparation",
+
                 duration: "Ongoing",
+
                 skills: [
-                    "Resume building",
-                    "Portfolio development",
-                    "Interview preparation",
+                    "Resume Building",
+                    "Portfolio Development",
+                    "Interview Preparation",
                     "Communication",
                     "Networking"
                 ],
+
                 topics: [
                     profile.internship,
                     "Create a professional resume",
-                    "Build a LinkedIn profile",
-                    "Maintain a GitHub or portfolio where relevant",
-                    "Apply for relevant internships",
-                    "Prepare for interviews"
+                    "Build or update your LinkedIn profile",
+                    "Maintain your portfolio",
+                    "Search for relevant internships",
+                    "Prepare for interviews",
+                    "Apply for relevant opportunities"
                 ]
             }
+
         ],
+
+        skills: profile.skills,
+
+        tools: profile.tools,
+
+        projects: profile.projects,
 
         internshipPreparation: profile.internship,
 
         careerOptions: profile.careers,
 
         importantNote:
-            "Career requirements vary by role, organization and location. Always verify professional qualifications, licensing requirements and current job requirements before applying."
+            "Career requirements can vary by role, organization and location. Verify current qualifications and job requirements before applying."
+
     };
+
+
+    return roadmap;
 }
 
 
-// ======================================================
-// ROADMAP API
-// ======================================================
+// =====================================================
+// GENERATE ROADMAP API
+// =====================================================
 
 app.post("/api/generate-roadmap", (req, res) => {
 
     try {
 
-        const { course } = req.body;
+        const course =
+            req.body && req.body.course;
 
-        if (!course || !String(course).trim()) {
+
+        if (
+            course === undefined ||
+            course === null ||
+            !String(course).trim()
+        ) {
+
             return res.status(400).json({
+
                 success: false,
-                message: "Please enter a career or course."
+
+                message:
+                    "Please enter a career or course."
             });
         }
 
-        const roadmap = buildRoadmap(course);
 
-        return res.json({
+        const requestedCourse =
+            String(course).trim();
+
+
+        const roadmap =
+            buildRoadmap(requestedCourse);
+
+
+        console.log(
+            `Roadmap generated for: ${requestedCourse}`
+        );
+
+
+        return res.status(200).json({
+
             success: true,
+
+            course: requestedCourse,
+
             roadmap: roadmap
         });
 
+
     } catch (error) {
 
-        console.error("Roadmap generation error:", error);
+        console.error(
+            "Roadmap generation error:",
+            error
+        );
+
 
         return res.status(500).json({
+
             success: false,
-            message: "Unable to generate roadmap."
+
+            message:
+                "Unable to generate roadmap right now."
         });
     }
+
 });
 
 
-// ======================================================
+// =====================================================
 // AVAILABLE CAREERS API
-// ======================================================
+// =====================================================
 
 app.get("/api/careers", (req, res) => {
 
-    const careers = Object.values(careerProfiles).map(career => ({
-        title: career.title,
-        category: career.category
-    }));
+    try {
 
-    res.json({
-        success: true,
-        careers
+        const careers =
+            Object.keys(careerProfiles);
+
+
+        res.json({
+
+            success: true,
+
+            count: careers.length,
+
+            careers: careers
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Career list error:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            success: false,
+
+            message:
+                "Unable to load careers."
+        });
+    }
+
+});
+
+
+// =====================================================
+// 404
+// =====================================================
+
+app.use((req, res) => {
+
+    res.status(404).json({
+
+        success: false,
+
+        message: "API endpoint not found."
     });
+
 });
 
 
-// ======================================================
-// SERVER
-// ======================================================
+// =====================================================
+// SERVER ERROR HANDLER
+// =====================================================
 
-const PORT = process.env.PORT || 5000;
+app.use((error, req, res, next) => {
 
-app.listen(PORT, "0.0.0.0", () => {
-
-    console.log(
-        `CareerPath backend running on port ${PORT}`
+    console.error(
+        "Server error:",
+        error
     );
 
-    console.log(
-        "Career-aware roadmap generator is enabled."
-    );
+
+    res.status(500).json({
+
+        success: false,
+
+        message:
+            "Something went wrong on the server."
+    });
+
 });
+
+
+// =====================================================
+// START SERVER
+// =====================================================
+
+const PORT =
+    process.env.PORT || 5000;
+
+
+app.listen(
+    PORT,
+    "0.0.0.0",
+    () => {
+
+        console.log(
+            `CareerPath backend running on port ${PORT}`
+        );
+
+        console.log(
+            "Dynamic career-aware roadmap generator is enabled."
+        );
+
+    }
+);
