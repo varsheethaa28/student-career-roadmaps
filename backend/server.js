@@ -1,1500 +1,1980 @@
-const express = require("express");
-const cors = require("cors");
-const crypto = require("crypto");
-const rateLimit = require("express-rate-limit");
-const { Resend } = require("resend");
+// ======================================================
+// CAREERPATH BACKEND
+// ======================================================
+
 require("dotenv").config();
 
+const express = require("express");
+const cors = require("cors");
+
+// Firebase Admin SDK v14+
 const { initializeApp, cert } = require("firebase-admin/app");
-const { getAuth } = require("firebase-admin/auth");
+
+// ======================================================
+// APP SETUP
+// ======================================================
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// ====================================
-// FIREBASE ADMIN
-// ====================================
 
-const serviceAccount = require("./serviceAccountKey.json");
+// ======================================================
+// FIREBASE ADMIN
+// ======================================================
 
 try {
+    const serviceAccount = require("./serviceAccountKey.json");
+
     initializeApp({
         credential: cert(serviceAccount)
     });
 
     console.log("Firebase Admin initialized successfully");
+
 } catch (error) {
-    console.error(
-        "Firebase initialization error:",
-        error.message
-    );
+    console.log("Firebase Admin initialization skipped:");
+    console.log(error.message);
 }
 
-const firebaseAuth = getAuth();
 
-// ====================================
-// RESEND
-// ====================================
-
-const resend = new Resend(
-    process.env.RESEND_API_KEY
-);
-
-// ====================================
-// OTP CONFIGURATION
-// ====================================
-
-const OTP_EXPIRY_MINUTES = 10;
-const MAX_OTP_ATTEMPTS = 5;
-
-const resetRequests = new Map();
-
-// ====================================
-// RATE LIMITERS
-// ====================================
-
-const requestResetLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 5,
-
-    message: {
-        message:
-            "Too many reset requests. Try again later."
-    }
-});
-
-const verifyOtpLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
-
-    message: {
-        message:
-            "Too many OTP attempts. Try again later."
-    }
-});
-
-// ====================================
-// HELPER FUNCTIONS
-// ====================================
-
-function normalizeEmail(email) {
-    return String(email || "")
-        .trim()
-        .toLowerCase();
-}
-
-function generateOTP() {
-    return crypto
-        .randomInt(100000, 1000000)
-        .toString();
-}
-
-function hashValue(value) {
-    return crypto
-        .createHash("sha256")
-        .update(value)
-        .digest("hex");
-}
-
-function createResetToken() {
-    return crypto
-        .randomBytes(32)
-        .toString("hex");
-}
-
-// ====================================
-// HOME
-// ====================================
+// ======================================================
+// BASIC ROUTES
+// ======================================================
 
 app.get("/", (req, res) => {
     res.json({
-        message:
-            "CareerPath backend is working!"
+        success: true,
+        message: "CareerPath backend is running",
+        service: "CareerPath API"
     });
 });
 
-// ====================================
-// FIREBASE TEST
-// ====================================
 
-app.get("/api/firebase-test", async (req, res) => {
-    try {
-        const result =
-            await firebaseAuth.listUsers(1);
-
-        res.json({
-            success: true,
-            message:
-                "Firebase Admin is working",
-            usersFound:
-                result.users.length
-        });
-
-    } catch (error) {
-        console.error(
-            "Firebase test error:",
-            error.message
-        );
-
-        res.status(500).json({
-            success: false,
-            message:
-                "Firebase test failed"
-        });
-    }
+app.get("/api/health", (req, res) => {
+    res.json({
+        success: true,
+        status: "healthy"
+    });
 });
 
-// ====================================
-// RESEND TEST
-// ====================================
 
-app.get("/api/email-test", async (req, res) => {
-    try {
-        const testEmail =
-            normalizeEmail(
-                req.query.email
-            );
+// ======================================================
+// CAREER DATABASE
+// ======================================================
 
-        if (!testEmail) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    "Please provide an email address."
-            });
-        }
+const careerProfiles = {
 
-        const { data, error } =
-            await resend.emails.send({
-                from:
-                    process.env.RESEND_FROM_EMAIL ||
-                    "onboarding@resend.dev",
+    // ==================================================
+    // TECHNOLOGY
+    // ==================================================
 
-                to: [testEmail],
-
-                subject:
-                    "CareerPath Resend Test",
-
-                text:
-                    "This is a test email from CareerPath."
-            });
-
-        if (error) {
-            console.error(
-                "Resend test error:",
-                error
-            );
-
-            return res.status(500).json({
-                success: false,
-                message:
-                    "Resend email failed.",
-                error:
-                    error.message ||
-                    String(error)
-            });
-        }
-
-        res.json({
-            success: true,
-            message:
-                "Test email sent successfully.",
-            data
-        });
-
-    } catch (error) {
-        console.error(
-            "Email test error:",
-            error.message
-        );
-
-        res.status(500).json({
-            success: false,
-            message:
-                "Unable to send test email."
-        });
-    }
-});
-
-// ====================================
-// REQUEST PASSWORD RESET
-// ====================================
-
-app.post(
-    "/api/auth/request-reset",
-    requestResetLimiter,
-
-    async (req, res) => {
-
-        const email =
-            normalizeEmail(
-                req.body.email
-            );
-
-        const generalResponse = {
-            success: true,
-
-            message:
-                "If an account exists with this email, an OTP has been sent."
-        };
-
-        if (!email) {
-            return res.json(
-                generalResponse
-            );
-        }
-
-        try {
-
-            let userRecord;
-
-            try {
-
-                userRecord =
-                    await firebaseAuth.getUserByEmail(
-                        email
-                    );
-
-            } catch (error) {
-
-                if (
-                    error.code ===
-                    "auth/user-not-found"
-                ) {
-                    return res.json(
-                        generalResponse
-                    );
-                }
-
-                throw error;
-            }
-
-            const otp =
-                generateOTP();
-
-            const otpHash =
-                hashValue(otp);
-
-            const resetToken =
-                createResetToken();
-
-            const expiresAt =
-                Date.now() +
-                OTP_EXPIRY_MINUTES *
-                60 *
-                1000;
-
-            resetRequests.set(email, {
-
-                uid:
-                    userRecord.uid,
-
-                otpHash,
-
-                resetToken,
-
-                expiresAt,
-
-                attempts: 0,
-
-                verified: false
-
-            });
-
-            const { data, error } =
-                await resend.emails.send({
-
-                    from:
-                        process.env.RESEND_FROM_EMAIL ||
-                        "onboarding@resend.dev",
-
-                    to: [email],
-
-                    subject:
-                        "CareerPath Password Reset OTP",
-
-                    text: `
-Hello,
-
-Your CareerPath password reset OTP is:
-
-${otp}
-
-This OTP expires in ${OTP_EXPIRY_MINUTES} minutes.
-
-If you did not request a password reset, ignore this email.
-
-Regards,
-CareerPath Team
-                    `.trim()
-
-                });
-
-            if (error) {
-
-                console.error(
-                    "Resend OTP error:",
-                    error
-                );
-
-                resetRequests.delete(
-                    email
-                );
-
-                throw new Error(
-                    error.message ||
-                    "Resend could not send the OTP email."
-                );
-            }
-
-            console.log(
-                "Password reset OTP email sent:",
-                data
-            );
-
-            res.json(
-                generalResponse
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Request reset error:",
-                error.message
-            );
-
-            res.status(500).json({
-
-                success: false,
-
-                message:
-                    "Unable to process the reset request."
-
-            });
-        }
-    }
-);
-
-// ====================================
-// VERIFY OTP
-// ====================================
-
-app.post(
-    "/api/auth/verify-reset-otp",
-    verifyOtpLimiter,
-
-    async (req, res) => {
-
-        try {
-
-            const email =
-                normalizeEmail(
-                    req.body.email
-                );
-
-            const otp =
-                String(
-                    req.body.otp || ""
-                ).trim();
-
-            if (!email || !otp) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Email and OTP are required."
-
-                });
-            }
-
-            const resetRequest =
-                resetRequests.get(email);
-
-            if (!resetRequest) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Invalid or expired OTP."
-
-                });
-            }
-
-            if (
-                Date.now() >
-                resetRequest.expiresAt
-            ) {
-
-                resetRequests.delete(
-                    email
-                );
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "OTP has expired."
-
-                });
-            }
-
-            if (
-                resetRequest.attempts >=
-                MAX_OTP_ATTEMPTS
-            ) {
-
-                resetRequests.delete(
-                    email
-                );
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Too many incorrect attempts."
-
-                });
-            }
-
-            resetRequest.attempts++;
-
-            const submittedOtpHash =
-                hashValue(otp);
-
-            if (
-                submittedOtpHash !==
-                resetRequest.otpHash
-            ) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Invalid or expired OTP."
-
-                });
-            }
-
-            resetRequest.verified =
-                true;
-
-            res.json({
-
-                success: true,
-
-                message:
-                    "OTP verified successfully.",
-
-                resetToken:
-                    resetRequest.resetToken
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "Verify OTP error:",
-                error.message
-            );
-
-            res.status(500).json({
-
-                success: false,
-
-                message:
-                    "Unable to verify OTP."
-
-            });
-        }
-    }
-);
-
-// ====================================
-// RESET PASSWORD
-// ====================================
-
-app.post(
-    "/api/auth/reset-password",
-
-    async (req, res) => {
-
-        try {
-
-            const email =
-                normalizeEmail(
-                    req.body.email
-                );
-
-            const resetToken =
-                String(
-                    req.body.resetToken || ""
-                ).trim();
-
-            const newPassword =
-                String(
-                    req.body.newPassword || ""
-                );
-
-            if (
-                !email ||
-                !resetToken ||
-                !newPassword
-            ) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Required fields are missing."
-
-                });
-            }
-
-            if (
-                newPassword.length < 6
-            ) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Password must contain at least 6 characters."
-
-                });
-            }
-
-            const resetRequest =
-                resetRequests.get(email);
-
-            if (!resetRequest) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Invalid or expired reset request."
-
-                });
-            }
-
-            if (
-                Date.now() >
-                resetRequest.expiresAt
-            ) {
-
-                resetRequests.delete(
-                    email
-                );
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Reset request has expired."
-
-                });
-            }
-
-            if (
-                !resetRequest.verified
-            ) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Please verify your OTP first."
-
-                });
-            }
-
-            if (
-                resetRequest.resetToken !==
-                resetToken
-            ) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Invalid reset token."
-
-                });
-            }
-
-            await firebaseAuth.updateUser(
-                resetRequest.uid,
-
-                {
-                    password:
-                        newPassword
-                }
-            );
-
-            resetRequests.delete(
-                email
-            );
-
-            res.json({
-
-                success: true,
-
-                message:
-                    "Password reset successfully. You can now log in."
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "Reset password error:",
-                error.message
-            );
-
-            res.status(500).json({
-
-                success: false,
-
-                message:
-                    "Unable to reset password."
-
-            });
-        }
-    }
-);
-
-// ====================================
-// FREE ROADMAP DATABASE
-// ====================================
-
-const roadmapTemplates = {
-
-    python: {
-        title: "Python Developer Roadmap",
-
+    "full stack developer": {
+        category: "Technology",
+        title: "Full Stack Developer",
         overview:
-            "Learn Python from the basics and progress toward building real applications, APIs and projects.",
-
+            "A Full Stack Developer builds complete web applications by working with both frontend and backend technologies.",
         prerequisites: [
-            "Basic computer knowledge",
-            "Logical thinking",
-            "Basic mathematics"
+            "Basic programming knowledge",
+            "HTML and CSS",
+            "JavaScript fundamentals"
         ],
-
-        stages: [
-
-            {
-                number: 1,
-                title: "Python Fundamentals",
-                duration: "2-3 weeks",
-
-                description:
-                    "Learn Python syntax and programming fundamentals.",
-
-                skills: [
-                    "Variables",
-                    "Data Types",
-                    "Operators",
-                    "Conditions",
-                    "Loops",
-                    "Functions"
-                ],
-
-                tools: [
-                    "Python",
-                    "VS Code"
-                ],
-
-                projects: [
-                    {
-                        title: "Calculator",
-                        description:
-                            "Build a command-line calculator using Python."
-                    },
-                    {
-                        title: "Number Guessing Game",
-                        description:
-                            "Create a simple interactive guessing game."
-                    }
-                ]
-            },
-
-            {
-                number: 2,
-                title: "Intermediate Python",
-                duration: "3-4 weeks",
-
-                description:
-                    "Develop stronger Python programming skills.",
-
-                skills: [
-                    "Lists",
-                    "Tuples",
-                    "Dictionaries",
-                    "Sets",
-                    "File Handling",
-                    "Exception Handling"
-                ],
-
-                tools: [
-                    "Python",
-                    "VS Code",
-                    "Git"
-                ],
-
-                projects: [
-                    {
-                        title: "Student Management System",
-                        description:
-                            "Create an application to store and manage student information."
-                    }
-                ]
-            },
-
-            {
-                number: 3,
-                title: "Object Oriented Programming",
-                duration: "2-3 weeks",
-
-                description:
-                    "Learn how professional Python applications are structured.",
-
-                skills: [
-                    "Classes",
-                    "Objects",
-                    "Inheritance",
-                    "Encapsulation",
-                    "Polymorphism"
-                ],
-
-                tools: [
-                    "Python",
-                    "GitHub"
-                ],
-
-                projects: [
-                    {
-                        title: "Bank Management System",
-                        description:
-                            "Build a Python application using classes and objects."
-                    }
-                ]
-            },
-
-            {
-                number: 4,
-                title: "Web Development with Python",
-                duration: "4-6 weeks",
-
-                description:
-                    "Learn how Python is used to build backend applications.",
-
-                skills: [
-                    "HTTP",
-                    "REST APIs",
-                    "Flask",
-                    "FastAPI",
-                    "JSON"
-                ],
-
-                tools: [
-                    "Flask",
-                    "FastAPI",
-                    "Postman"
-                ],
-
-                projects: [
-                    {
-                        title: "Student REST API",
-                        description:
-                            "Create a backend API for student information."
-                    }
-                ]
-            },
-
-            {
-                number: 5,
-                title: "Databases",
-                duration: "3-4 weeks",
-
-                description:
-                    "Learn how applications store and retrieve data.",
-
-                skills: [
-                    "SQL",
-                    "CRUD Operations",
-                    "Database Design",
-                    "Relationships"
-                ],
-
-                tools: [
-                    "MySQL",
-                    "PostgreSQL"
-                ],
-
-                projects: [
-                    {
-                        title: "Student Database Application",
-                        description:
-                            "Build an application connected to a relational database."
-                    }
-                ]
-            },
-
-            {
-                number: 6,
-                title: "Job and Internship Preparation",
-                duration: "3-4 weeks",
-
-                description:
-                    "Prepare your portfolio and technical skills for internships and fresher roles.",
-
-                skills: [
-                    "GitHub",
-                    "Resume Building",
-                    "Problem Solving",
-                    "Interview Preparation"
-                ],
-
-                tools: [
-                    "GitHub",
-                    "LinkedIn"
-                ],
-
-                projects: [
-                    {
-                        title: "Portfolio Project",
-                        description:
-                            "Build and publish a complete Python project on GitHub."
-                    }
-                ]
-            }
-
+        skills: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "Express.js",
+            "REST APIs",
+            "Databases",
+            "Git and GitHub"
         ],
-
-        internshipPreparation: [
-            "Create a GitHub profile",
-            "Upload 2-3 Python projects",
-            "Build a resume focused on Python",
-            "Practice coding problems",
-            "Apply for Python internships"
+        tools: [
+            "VS Code",
+            "Git",
+            "GitHub",
+            "Postman",
+            "MongoDB",
+            "Firebase"
         ],
-
-        careerOptions: [
-            "Python Developer",
-            "Backend Developer",
+        projects: [
+            "Personal portfolio",
+            "Student management system",
+            "E-commerce website",
+            "Full stack internship portal"
+        ],
+        internship:
+            "Build 2-3 complete projects, maintain a GitHub profile and apply for frontend, backend and full-stack internships.",
+        careers: [
+            "Full Stack Developer",
+            "Web Developer",
             "Software Developer",
-            "Automation Developer",
-            "Junior API Developer"
-        ],
-
-        importantNote:
-            "Practice by building projects instead of only watching tutorials."
+            "Backend Developer",
+            "Frontend Developer"
+        ]
     },
 
-    cybersecurity: {
-        title: "Cybersecurity Roadmap",
-
+    "frontend developer": {
+        category: "Technology",
+        title: "Frontend Developer",
         overview:
-            "Build cybersecurity knowledge from networking and operating systems to security tools, ethical hacking and practical projects.",
-
+            "Frontend Developers create the visual and interactive parts of websites and web applications.",
         prerequisites: [
             "Basic computer knowledge",
-            "Basic networking concepts",
-            "Linux fundamentals"
+            "HTML fundamentals",
+            "CSS fundamentals"
         ],
-
-        stages: [
-
-            {
-                number: 1,
-                title: "Computer and Networking Fundamentals",
-                duration: "3-4 weeks",
-
-                description:
-                    "Understand how computers and networks communicate.",
-
-                skills: [
-                    "TCP/IP",
-                    "DNS",
-                    "HTTP",
-                    "Ports",
-                    "IP Addresses",
-                    "Networking Basics"
-                ],
-
-                tools: [
-                    "Wireshark",
-                    "Cisco Packet Tracer"
-                ],
-
-                projects: [
-                    {
-                        title: "Network Analysis Lab",
-                        description:
-                            "Capture and study network traffic in a controlled environment."
-                    }
-                ]
-            },
-
-            {
-                number: 2,
-                title: "Linux Fundamentals",
-                duration: "2-3 weeks",
-
-                description:
-                    "Learn Linux commands and system administration basics.",
-
-                skills: [
-                    "Linux Commands",
-                    "File Permissions",
-                    "Processes",
-                    "Users",
-                    "Shell Basics"
-                ],
-
-                tools: [
-                    "Ubuntu",
-                    "Kali Linux"
-                ],
-
-                projects: [
-                    {
-                        title: "Linux Security Lab",
-                        description:
-                            "Create a controlled Linux lab and practice basic security administration."
-                    }
-                ]
-            },
-
-            {
-                number: 3,
-                title: "Cybersecurity Fundamentals",
-                duration: "3-4 weeks",
-
-                description:
-                    "Learn common security concepts and threats.",
-
-                skills: [
-                    "CIA Triad",
-                    "Authentication",
-                    "Authorization",
-                    "Cryptography Basics",
-                    "Security Threats"
-                ],
-
-                tools: [
-                    "Wireshark",
-                    "Nmap"
-                ],
-
-                projects: [
-                    {
-                        title: "Security Assessment Lab",
-                        description:
-                            "Perform basic security analysis in your own controlled lab."
-                    }
-                ]
-            },
-
-            {
-                number: 4,
-                title: "Web Security",
-                duration: "4-5 weeks",
-
-                description:
-                    "Understand common web application security concepts.",
-
-                skills: [
-                    "HTTP",
-                    "Sessions",
-                    "Authentication",
-                    "OWASP Concepts",
-                    "Input Validation"
-                ],
-
-                tools: [
-                    "Burp Suite",
-                    "OWASP ZAP"
-                ],
-
-                projects: [
-                    {
-                        title: "Web Security Lab",
-                        description:
-                            "Practice identifying common vulnerabilities in intentionally vulnerable applications."
-                    }
-                ]
-            },
-
-            {
-                number: 5,
-                title: "Practical Security Skills",
-                duration: "4-6 weeks",
-
-                description:
-                    "Develop hands-on skills through legal and controlled security labs.",
-
-                skills: [
-                    "Reconnaissance",
-                    "Vulnerability Analysis",
-                    "Log Analysis",
-                    "Incident Response Basics"
-                ],
-
-                tools: [
-                    "Nmap",
-                    "Wireshark",
-                    "Burp Suite"
-                ],
-
-                projects: [
-                    {
-                        title: "Security Monitoring Project",
-                        description:
-                            "Create a small lab for collecting and analyzing security events."
-                    }
-                ]
-            },
-
-            {
-                number: 6,
-                title: "Career Preparation",
-                duration: "3-4 weeks",
-
-                description:
-                    "Prepare for cybersecurity internships and entry-level roles.",
-
-                skills: [
-                    "Security Portfolio",
-                    "CTF Practice",
-                    "Resume Building",
-                    "Interview Preparation"
-                ],
-
-                tools: [
-                    "GitHub",
-                    "LinkedIn"
-                ],
-
-                projects: [
-                    {
-                        title: "Cybersecurity Portfolio",
-                        description:
-                            "Document your security labs, projects and learning journey."
-                    }
-                ]
-            }
-
+        skills: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "Responsive Design",
+            "React",
+            "Git",
+            "REST API integration"
         ],
-
-        internshipPreparation: [
-            "Build a cybersecurity portfolio",
-            "Complete legal security labs",
-            "Document projects on GitHub",
-            "Practice networking and Linux",
-            "Apply for cybersecurity internships"
+        tools: [
+            "VS Code",
+            "GitHub",
+            "Chrome DevTools",
+            "Figma"
         ],
+        projects: [
+            "Portfolio website",
+            "Responsive landing page",
+            "Weather application",
+            "Student dashboard"
+        ],
+        internship:
+            "Create responsive websites and publish them online. Build a portfolio and apply for frontend internships.",
+        careers: [
+            "Frontend Developer",
+            "React Developer",
+            "Web Developer",
+            "UI Developer"
+        ]
+    },
 
-        careerOptions: [
-            "Cybersecurity Analyst",
-            "SOC Analyst",
+    "backend developer": {
+        category: "Technology",
+        title: "Backend Developer",
+        overview:
+            "Backend Developers create APIs, server-side applications, authentication systems and database logic.",
+        prerequisites: [
+            "Programming fundamentals",
+            "Basic databases",
+            "Basic networking"
+        ],
+        skills: [
+            "Node.js",
+            "Express.js",
+            "REST APIs",
+            "Authentication",
+            "Databases",
+            "SQL",
+            "MongoDB",
+            "Git"
+        ],
+        tools: [
+            "VS Code",
+            "Postman",
+            "MongoDB Compass",
+            "GitHub"
+        ],
+        projects: [
+            "REST API",
+            "Authentication system",
+            "Student management backend",
+            "E-commerce backend"
+        ],
+        internship:
+            "Build APIs and backend projects and demonstrate them through GitHub and Postman collections.",
+        careers: [
+            "Backend Developer",
+            "Node.js Developer",
+            "API Developer",
+            "Software Developer"
+        ]
+    },
+
+    "mobile app developer": {
+        category: "Technology",
+        title: "Mobile App Developer",
+        overview:
+            "Mobile App Developers build applications for Android and iOS devices.",
+        prerequisites: [
+            "Programming fundamentals",
+            "Basic UI concepts"
+        ],
+        skills: [
+            "Java",
+            "Kotlin",
+            "Flutter",
+            "Dart",
+            "React Native",
+            "APIs",
+            "Firebase"
+        ],
+        tools: [
+            "Android Studio",
+            "VS Code",
+            "Firebase",
+            "GitHub"
+        ],
+        projects: [
+            "Student app",
+            "Expense tracker",
+            "Travel application",
+            "College management app"
+        ],
+        internship:
+            "Build and publish at least one functional mobile application.",
+        careers: [
+            "Android Developer",
+            "Flutter Developer",
+            "Mobile App Developer",
+            "React Native Developer"
+        ]
+    },
+
+    "python developer": {
+        category: "Technology",
+        title: "Python Developer",
+        overview:
+            "Python Developers use Python for software development, automation, backend systems and data applications.",
+        prerequisites: [
+            "Basic programming",
+            "Logical thinking"
+        ],
+        skills: [
+            "Python",
+            "Object-Oriented Programming",
+            "Data Structures",
+            "Flask",
+            "Django",
+            "APIs",
+            "SQL",
+            "Git"
+        ],
+        tools: [
+            "VS Code",
+            "PyCharm",
+            "GitHub",
+            "Postman"
+        ],
+        projects: [
+            "Python automation tool",
+            "REST API",
+            "Django website",
+            "Student management system"
+        ],
+        internship:
+            "Build Python projects and apply for Python development internships.",
+        careers: [
+            "Python Developer",
+            "Backend Developer",
+            "Django Developer",
+            "Software Developer"
+        ]
+    },
+
+
+    // ==================================================
+    // DATA & AI
+    // ==================================================
+
+    "data analyst": {
+        category: "Data & AI",
+        title: "Data Analyst",
+        overview:
+            "Data Analysts collect, clean, analyze and visualize data to support business decisions.",
+        prerequisites: [
+            "Basic mathematics",
+            "Basic statistics",
+            "Spreadsheet knowledge"
+        ],
+        skills: [
+            "Excel",
+            "SQL",
+            "Python",
+            "Pandas",
+            "Statistics",
+            "Data Visualization",
+            "Power BI"
+        ],
+        tools: [
+            "Excel",
+            "Power BI",
+            "Tableau",
+            "Jupyter Notebook",
+            "MySQL"
+        ],
+        projects: [
+            "Sales dashboard",
+            "Student performance analysis",
+            "COVID data analysis",
+            "E-commerce analytics"
+        ],
+        internship:
+            "Create dashboards and data analysis projects and publish them in your portfolio.",
+        careers: [
+            "Data Analyst",
+            "Business Analyst",
+            "BI Analyst",
+            "Reporting Analyst"
+        ]
+    },
+
+    "data scientist": {
+        category: "Data & AI",
+        title: "Data Scientist",
+        overview:
+            "Data Scientists use statistics, programming and machine learning to extract insights from data.",
+        prerequisites: [
+            "Python basics",
+            "Statistics",
+            "Mathematics"
+        ],
+        skills: [
+            "Python",
+            "Statistics",
+            "Machine Learning",
+            "Pandas",
+            "NumPy",
+            "SQL",
+            "Data Visualization"
+        ],
+        tools: [
+            "Jupyter",
+            "Google Colab",
+            "Scikit-learn",
+            "Power BI"
+        ],
+        projects: [
+            "House price prediction",
+            "Customer segmentation",
+            "Sales prediction",
+            "Recommendation system"
+        ],
+        internship:
+            "Build machine learning and analytics projects and maintain a data science portfolio.",
+        careers: [
+            "Data Scientist",
+            "Data Analyst",
+            "ML Engineer",
+            "Research Analyst"
+        ]
+    },
+
+    "machine learning engineer": {
+        category: "Data & AI",
+        title: "Machine Learning Engineer",
+        overview:
+            "Machine Learning Engineers build, train, evaluate and deploy machine learning models.",
+        prerequisites: [
+            "Python",
+            "Statistics",
+            "Linear algebra basics"
+        ],
+        skills: [
+            "Python",
+            "Machine Learning",
+            "Deep Learning",
+            "Scikit-learn",
+            "TensorFlow",
+            "PyTorch",
+            "SQL",
+            "MLOps"
+        ],
+        tools: [
+            "Google Colab",
+            "Jupyter",
+            "TensorFlow",
+            "PyTorch",
+            "GitHub"
+        ],
+        projects: [
+            "Image classifier",
+            "Recommendation system",
+            "Fraud detection model",
+            "Prediction system"
+        ],
+        internship:
+            "Create several ML projects and learn model deployment.",
+        careers: [
+            "Machine Learning Engineer",
+            "ML Developer",
+            "Data Scientist",
+            "AI Engineer"
+        ]
+    },
+
+    "artificial intelligence engineer": {
+        category: "Data & AI",
+        title: "Artificial Intelligence Engineer",
+        overview:
+            "AI Engineers build applications using machine learning, deep learning and modern AI technologies.",
+        prerequisites: [
+            "Python",
+            "Mathematics",
+            "Programming fundamentals"
+        ],
+        skills: [
+            "Python",
+            "Machine Learning",
+            "Deep Learning",
+            "NLP",
+            "Computer Vision",
+            "Generative AI",
+            "APIs"
+        ],
+        tools: [
+            "Python",
+            "PyTorch",
+            "TensorFlow",
+            "Jupyter",
+            "GitHub"
+        ],
+        projects: [
+            "AI chatbot",
+            "Image recognition system",
+            "Recommendation engine",
+            "AI assistant"
+        ],
+        internship:
+            "Build practical AI applications and learn how to deploy AI models.",
+        careers: [
+            "AI Engineer",
+            "Machine Learning Engineer",
+            "AI Developer",
+            "Data Scientist"
+        ]
+    },
+
+
+    // ==================================================
+    // CYBERSECURITY
+    // ==================================================
+
+    "cybersecurity analyst": {
+        category: "Cybersecurity",
+        title: "Cybersecurity Analyst",
+        overview:
+            "Cybersecurity Analysts monitor systems, investigate security incidents and help protect organizations from cyber threats.",
+        prerequisites: [
+            "Computer fundamentals",
+            "Networking basics",
+            "Operating systems"
+        ],
+        skills: [
+            "Networking",
+            "Linux",
+            "Windows Security",
+            "SIEM",
+            "Incident Response",
+            "Threat Analysis",
+            "Security Fundamentals"
+        ],
+        tools: [
+            "Wireshark",
+            "Nmap",
+            "Linux",
+            "Splunk",
+            "Burp Suite"
+        ],
+        projects: [
+            "Home security lab",
+            "Network traffic analysis",
+            "Security monitoring dashboard",
+            "Incident response simulation"
+        ],
+        internship:
+            "Build a cybersecurity lab and practice defensive security scenarios.",
+        careers: [
             "Security Analyst",
-            "Junior Penetration Tester",
+            "SOC Analyst",
+            "Cybersecurity Analyst",
             "Security Engineer"
+        ]
+    },
+
+    "ethical hacker": {
+        category: "Cybersecurity",
+        title: "Ethical Hacker",
+        overview:
+            "Ethical Hackers legally test systems and applications to identify security weaknesses.",
+        prerequisites: [
+            "Networking",
+            "Linux",
+            "Programming basics"
         ],
+        skills: [
+            "Networking",
+            "Linux",
+            "Web Security",
+            "OWASP",
+            "Penetration Testing",
+            "Python",
+            "Security Testing"
+        ],
+        tools: [
+            "Kali Linux",
+            "Burp Suite",
+            "Nmap",
+            "Wireshark",
+            "Metasploit"
+        ],
+        projects: [
+            "Web security lab",
+            "CTF challenges",
+            "Vulnerability assessment report",
+            "Local penetration testing lab"
+        ],
+        internship:
+            "Practice only on authorized labs such as CTF platforms and intentionally vulnerable applications.",
+        careers: [
+            "Ethical Hacker",
+            "Penetration Tester",
+            "Security Tester",
+            "Application Security Analyst"
+        ]
+    },
 
-        importantNote:
-            "Only perform security testing on systems you own or have explicit permission to test."
+    "cloud security engineer": {
+        category: "Cybersecurity",
+        title: "Cloud Security Engineer",
+        overview:
+            "Cloud Security Engineers protect cloud infrastructure, applications, identities and data.",
+        prerequisites: [
+            "Networking",
+            "Linux",
+            "Cloud fundamentals"
+        ],
+        skills: [
+            "AWS",
+            "Azure",
+            "IAM",
+            "Cloud Networking",
+            "Security Monitoring",
+            "Containers",
+            "DevSecOps"
+        ],
+        tools: [
+            "AWS",
+            "Azure",
+            "Docker",
+            "Terraform",
+            "GitHub"
+        ],
+        projects: [
+            "Secure cloud architecture",
+            "IAM project",
+            "Cloud monitoring setup",
+            "Secure container deployment"
+        ],
+        internship:
+            "Learn one major cloud platform and create security-focused cloud projects.",
+        careers: [
+            "Cloud Security Engineer",
+            "Cloud Engineer",
+            "Security Engineer",
+            "DevSecOps Engineer"
+        ]
+    },
+
+
+    // ==================================================
+    // DESIGN
+    // ==================================================
+
+    "ui/ux designer": {
+        category: "Design",
+        title: "UI/UX Designer",
+        overview:
+            "UI/UX Designers create user-friendly interfaces and experiences for digital products.",
+        prerequisites: [
+            "Basic design principles",
+            "Creative thinking"
+        ],
+        skills: [
+            "UI Design",
+            "UX Research",
+            "Wireframing",
+            "Prototyping",
+            "User Research",
+            "Design Systems"
+        ],
+        tools: [
+            "Figma",
+            "Adobe XD",
+            "FigJam"
+        ],
+        projects: [
+            "Mobile app redesign",
+            "College app UI",
+            "E-commerce prototype",
+            "Student dashboard"
+        ],
+        internship:
+            "Build a portfolio containing complete case studies rather than only screenshots.",
+        careers: [
+            "UI Designer",
+            "UX Designer",
+            "Product Designer",
+            "UX Researcher"
+        ]
+    },
+
+    "graphic designer": {
+        category: "Design",
+        title: "Graphic Designer",
+        overview:
+            "Graphic Designers create visual content for digital and print communication.",
+        prerequisites: [
+            "Creative interest",
+            "Basic design principles"
+        ],
+        skills: [
+            "Typography",
+            "Color theory",
+            "Branding",
+            "Layout",
+            "Illustration",
+            "Social media design"
+        ],
+        tools: [
+            "Adobe Photoshop",
+            "Illustrator",
+            "Canva",
+            "Figma"
+        ],
+        projects: [
+            "Brand identity",
+            "Poster collection",
+            "Social media campaign",
+            "Event branding"
+        ],
+        internship:
+            "Create a portfolio of original designs and case studies.",
+        careers: [
+            "Graphic Designer",
+            "Visual Designer",
+            "Brand Designer",
+            "Creative Designer"
+        ]
+    },
+
+    "animator": {
+        category: "Design",
+        title: "Animator",
+        overview:
+            "Animators create motion graphics, 2D animations, 3D animations and visual storytelling.",
+        prerequisites: [
+            "Drawing or visual design interest",
+            "Storytelling"
+        ],
+        skills: [
+            "Animation principles",
+            "Storyboarding",
+            "2D Animation",
+            "3D Animation",
+            "Motion Graphics"
+        ],
+        tools: [
+            "Blender",
+            "Adobe After Effects",
+            "Premiere Pro",
+            "Toon Boom"
+        ],
+        projects: [
+            "Short animation",
+            "Motion graphics video",
+            "Character animation",
+            "3D scene"
+        ],
+        internship:
+            "Create a showreel and portfolio demonstrating animation skills.",
+        careers: [
+            "Animator",
+            "3D Artist",
+            "Motion Designer",
+            "VFX Artist"
+        ]
+    },
+
+
+    // ==================================================
+    // MEDIA & COMMUNICATION
+    // ==================================================
+
+    "actor": {
+        category: "Media & Entertainment",
+        title: "Actor",
+        overview:
+            "Actors perform characters for films, television, theatre, advertisements, web series and digital media.",
+        prerequisites: [
+            "Interest in acting",
+            "Communication skills",
+            "Willingness to practice"
+        ],
+        skills: [
+            "Acting",
+            "Voice modulation",
+            "Body language",
+            "Dialogue delivery",
+            "Improvisation",
+            "Emotional expression",
+            "Audition skills"
+        ],
+        tools: [
+            "Camera",
+            "Microphone",
+            "Video editing software",
+            "Audition platforms"
+        ],
+        projects: [
+            "Self-tape audition",
+            "Short film",
+            "Monologue portfolio",
+            "Theatre performance"
+        ],
+        internship:
+            "Participate in theatre, student films, short films and legitimate auditions. Build a professional showreel.",
+        careers: [
+            "Film Actor",
+            "Television Actor",
+            "Theatre Artist",
+            "Voice Artist",
+            "Web Series Actor",
+            "Commercial Actor"
+        ]
+    },
+
+    "content writer": {
+        category: "Media & Communication",
+        title: "Content Writer",
+        overview:
+            "Content Writers create useful written content for websites, blogs, brands, social media and digital platforms.",
+        prerequisites: [
+            "Good language skills",
+            "Research ability",
+            "Basic computer skills"
+        ],
+        skills: [
+            "Writing",
+            "Research",
+            "SEO",
+            "Editing",
+            "Copywriting",
+            "Storytelling"
+        ],
+        tools: [
+            "Google Docs",
+            "WordPress",
+            "Grammarly",
+            "Search Console"
+        ],
+        projects: [
+            "Personal blog",
+            "SEO articles",
+            "Product descriptions",
+            "Social media content calendar"
+        ],
+        internship:
+            "Publish original articles and create a writing portfolio.",
+        careers: [
+            "Content Writer",
+            "Copywriter",
+            "SEO Writer",
+            "Technical Writer",
+            "Content Strategist"
+        ]
+    },
+
+    "journalist": {
+        category: "Media & Communication",
+        title: "Journalist",
+        overview:
+            "Journalists research, verify and communicate news and information through various media.",
+        prerequisites: [
+            "Strong communication",
+            "Research skills",
+            "Interest in current affairs"
+        ],
+        skills: [
+            "News writing",
+            "Research",
+            "Interviewing",
+            "Fact checking",
+            "Video journalism",
+            "Digital journalism"
+        ],
+        tools: [
+            "Google Docs",
+            "CMS platforms",
+            "Camera",
+            "Audio recorder"
+        ],
+        projects: [
+            "Student news portal",
+            "Interview series",
+            "Local news reporting",
+            "Podcast"
+        ],
+        internship:
+            "Build reporting experience through student publications, digital media and journalism internships.",
+        careers: [
+            "Journalist",
+            "Reporter",
+            "News Writer",
+            "Digital Journalist",
+            "Editor"
+        ]
+    },
+
+    "photographer": {
+        category: "Media & Entertainment",
+        title: "Photographer",
+        overview:
+            "Photographers create images for journalism, advertising, events, fashion, products and creative projects.",
+        prerequisites: [
+            "Interest in photography",
+            "Basic camera knowledge"
+        ],
+        skills: [
+            "Composition",
+            "Lighting",
+            "Camera operation",
+            "Photo editing",
+            "Visual storytelling"
+        ],
+        tools: [
+            "Camera",
+            "Lightroom",
+            "Photoshop",
+            "Tripod"
+        ],
+        projects: [
+            "Photography portfolio",
+            "Portrait series",
+            "Product photography",
+            "Event photography"
+        ],
+        internship:
+            "Create a portfolio and gain practical experience through events, studios and media organizations.",
+        careers: [
+            "Photographer",
+            "Photojournalist",
+            "Product Photographer",
+            "Fashion Photographer"
+        ]
+    },
+
+
+    // ==================================================
+    // BUSINESS
+    // ==================================================
+
+    "business analyst": {
+        category: "Business",
+        title: "Business Analyst",
+        overview:
+            "Business Analysts analyze business requirements, processes and data to help organizations improve operations.",
+        prerequisites: [
+            "Basic business knowledge",
+            "Analytical thinking"
+        ],
+        skills: [
+            "Business analysis",
+            "Excel",
+            "SQL",
+            "Data visualization",
+            "Requirements gathering",
+            "Communication"
+        ],
+        tools: [
+            "Excel",
+            "Power BI",
+            "Jira",
+            "Confluence"
+        ],
+        projects: [
+            "Business process analysis",
+            "Sales dashboard",
+            "Requirement document",
+            "Business case study"
+        ],
+        internship:
+            "Build analytical case studies and learn requirement gathering.",
+        careers: [
+            "Business Analyst",
+            "Product Analyst",
+            "Business Consultant",
+            "Operations Analyst"
+        ]
+    },
+
+    "digital marketing specialist": {
+        category: "Business",
+        title: "Digital Marketing Specialist",
+        overview:
+            "Digital Marketing Specialists promote products, services and brands through digital channels.",
+        prerequisites: [
+            "Basic internet knowledge",
+            "Communication skills"
+        ],
+        skills: [
+            "SEO",
+            "SEM",
+            "Social Media Marketing",
+            "Content Marketing",
+            "Email Marketing",
+            "Analytics"
+        ],
+        tools: [
+            "Google Analytics",
+            "Google Search Console",
+            "Canva",
+            "Google Ads"
+        ],
+        projects: [
+            "SEO website",
+            "Social media campaign",
+            "Content strategy",
+            "Marketing analytics dashboard"
+        ],
+        internship:
+            "Run practical campaigns and create a measurable marketing portfolio.",
+        careers: [
+            "Digital Marketing Specialist",
+            "SEO Specialist",
+            "Social Media Manager",
+            "Content Marketer"
+        ]
+    },
+
+
+    // ==================================================
+    // COMMERCE & FINANCE
+    // ==================================================
+
+    "accountant": {
+        category: "Commerce & Finance",
+        title: "Accountant",
+        overview:
+            "Accountants manage financial records, transactions, reports and compliance.",
+        prerequisites: [
+            "Basic accounting",
+            "Commerce fundamentals"
+        ],
+        skills: [
+            "Accounting",
+            "Bookkeeping",
+            "Excel",
+            "GST basics",
+            "Financial reporting"
+        ],
+        tools: [
+            "Tally",
+            "Excel",
+            "Accounting software"
+        ],
+        projects: [
+            "Sample business accounts",
+            "Financial statement analysis",
+            "Accounting spreadsheet"
+        ],
+        internship:
+            "Gain practical experience with accounting systems and financial documentation.",
+        careers: [
+            "Accountant",
+            "Accounts Executive",
+            "Finance Assistant",
+            "Tax Assistant"
+        ]
+    },
+
+    "financial analyst": {
+        category: "Commerce & Finance",
+        title: "Financial Analyst",
+        overview:
+            "Financial Analysts analyze financial information to support investment and business decisions.",
+        prerequisites: [
+            "Basic finance",
+            "Mathematics"
+        ],
+        skills: [
+            "Financial analysis",
+            "Excel",
+            "Financial modeling",
+            "Accounting",
+            "Data analysis"
+        ],
+        tools: [
+            "Excel",
+            "Power BI",
+            "Financial databases"
+        ],
+        projects: [
+            "Company financial analysis",
+            "Financial model",
+            "Investment research report"
+        ],
+        internship:
+            "Create financial analysis reports and learn financial modeling.",
+        careers: [
+            "Financial Analyst",
+            "Investment Analyst",
+            "FP&A Analyst",
+            "Credit Analyst"
+        ]
+    },
+
+    "chartered accountant": {
+        category: "Commerce & Finance",
+        title: "Chartered Accountant",
+        overview:
+            "Chartered Accountants work across accounting, auditing, taxation, finance and advisory.",
+        prerequisites: [
+            "Commerce or equivalent foundation",
+            "Interest in accounting and finance"
+        ],
+        skills: [
+            "Accounting",
+            "Auditing",
+            "Taxation",
+            "Financial Reporting",
+            "Corporate Law",
+            "Financial Analysis"
+        ],
+        tools: [
+            "Excel",
+            "Accounting software",
+            "Tally"
+        ],
+        projects: [
+            "Financial statement analysis",
+            "Tax calculation practice",
+            "Audit case study"
+        ],
+        internship:
+            "Follow the applicable professional qualification pathway and gain practical training experience.",
+        careers: [
+            "Chartered Accountant",
+            "Auditor",
+            "Tax Consultant",
+            "Financial Consultant"
+        ]
+    },
+
+
+    // ==================================================
+    // ENGINEERING
+    // ==================================================
+
+    "mechanical engineer": {
+        category: "Engineering",
+        title: "Mechanical Engineer",
+        overview:
+            "Mechanical Engineers design, analyze and develop machines, products and mechanical systems.",
+        prerequisites: [
+            "Physics",
+            "Mathematics",
+            "Engineering fundamentals"
+        ],
+        skills: [
+            "CAD",
+            "Mechanical Design",
+            "Thermodynamics",
+            "Manufacturing",
+            "Engineering Drawing"
+        ],
+        tools: [
+            "AutoCAD",
+            "SolidWorks",
+            "CATIA",
+            "MATLAB"
+        ],
+        projects: [
+            "Mechanical prototype",
+            "CAD model",
+            "Automation project",
+            "Product design"
+        ],
+        internship:
+            "Gain practical exposure through manufacturing, automotive, design or engineering organizations.",
+        careers: [
+            "Mechanical Engineer",
+            "Design Engineer",
+            "Production Engineer",
+            "Automotive Engineer"
+        ]
+    },
+
+    "civil engineer": {
+        category: "Engineering",
+        title: "Civil Engineer",
+        overview:
+            "Civil Engineers design and manage infrastructure such as buildings, roads, bridges and water systems.",
+        prerequisites: [
+            "Mathematics",
+            "Physics",
+            "Engineering fundamentals"
+        ],
+        skills: [
+            "Structural design",
+            "AutoCAD",
+            "Surveying",
+            "Construction management",
+            "Quantity estimation"
+        ],
+        tools: [
+            "AutoCAD",
+            "STAAD.Pro",
+            "Revit",
+            "Civil 3D"
+        ],
+        projects: [
+            "Building design",
+            "Structural model",
+            "Road design",
+            "Construction estimation"
+        ],
+        internship:
+            "Gain site and design experience through construction and infrastructure organizations.",
+        careers: [
+            "Civil Engineer",
+            "Structural Engineer",
+            "Site Engineer",
+            "Project Engineer"
+        ]
+    },
+
+    "electrical engineer": {
+        category: "Engineering",
+        title: "Electrical Engineer",
+        overview:
+            "Electrical Engineers work with electrical systems, power systems, control systems and electronics.",
+        prerequisites: [
+            "Mathematics",
+            "Physics",
+            "Electrical fundamentals"
+        ],
+        skills: [
+            "Circuit analysis",
+            "Power systems",
+            "Control systems",
+            "Electrical design",
+            "MATLAB"
+        ],
+        tools: [
+            "MATLAB",
+            "AutoCAD Electrical",
+            "ETAP"
+        ],
+        projects: [
+            "Smart energy system",
+            "Home automation",
+            "Solar power project",
+            "Motor control system"
+        ],
+        internship:
+            "Gain practical exposure through power, automation, manufacturing or electrical engineering companies.",
+        careers: [
+            "Electrical Engineer",
+            "Power Engineer",
+            "Control Engineer",
+            "Electrical Design Engineer"
+        ]
+    },
+
+    "electronics engineer": {
+        category: "Engineering",
+        title: "Electronics Engineer",
+        overview:
+            "Electronics Engineers design and develop electronic circuits, embedded systems and devices.",
+        prerequisites: [
+            "Mathematics",
+            "Physics",
+            "Electronics fundamentals"
+        ],
+        skills: [
+            "Circuit design",
+            "Embedded systems",
+            "Microcontrollers",
+            "PCB design",
+            "Digital electronics"
+        ],
+        tools: [
+            "Arduino",
+            "Raspberry Pi",
+            "KiCad",
+            "MATLAB"
+        ],
+        projects: [
+            "IoT device",
+            "Smart home system",
+            "Embedded controller",
+            "Sensor project"
+        ],
+        internship:
+            "Build embedded and IoT projects and seek internships in electronics and embedded companies.",
+        careers: [
+            "Electronics Engineer",
+            "Embedded Engineer",
+            "IoT Engineer",
+            "Hardware Engineer"
+        ]
+    },
+
+
+    // ==================================================
+    // HEALTHCARE
+    // ==================================================
+
+    "doctor": {
+        category: "Healthcare",
+        title: "Doctor",
+        overview:
+            "Doctors diagnose and manage medical conditions after completing the required medical education and licensing pathway.",
+        prerequisites: [
+            "Biology",
+            "Chemistry",
+            "Physics"
+        ],
+        skills: [
+            "Medical knowledge",
+            "Clinical reasoning",
+            "Communication",
+            "Patient care"
+        ],
+        tools: [
+            "Medical equipment",
+            "Electronic health records",
+            "Diagnostic tools"
+        ],
+        projects: [
+            "Medical research project",
+            "Health awareness campaign",
+            "Clinical case study"
+        ],
+        internship:
+            "Follow the applicable medical education, clinical training and licensing requirements.",
+        careers: [
+            "Doctor",
+            "Medical Officer",
+            "Specialist",
+            "Medical Researcher"
+        ]
+    },
+
+    "pharmacist": {
+        category: "Healthcare",
+        title: "Pharmacist",
+        overview:
+            "Pharmacists work with medicines, dispensing, pharmaceutical information and patient guidance within their professional scope.",
+        prerequisites: [
+            "Chemistry",
+            "Biology",
+            "Pharmaceutical science"
+        ],
+        skills: [
+            "Pharmacology",
+            "Drug information",
+            "Dispensing",
+            "Pharmaceutical science"
+        ],
+        tools: [
+            "Pharmacy management systems",
+            "Laboratory equipment"
+        ],
+        projects: [
+            "Drug information project",
+            "Pharmacy management project",
+            "Healthcare awareness project"
+        ],
+        internship:
+            "Complete the required professional education and practical training.",
+        careers: [
+            "Pharmacist",
+            "Clinical Pharmacist",
+            "Pharmaceutical Researcher",
+            "Drug Safety Associate"
+        ]
+    },
+
+
+    // ==================================================
+    // EDUCATION
+    // ==================================================
+
+    "teacher": {
+        category: "Education",
+        title: "Teacher",
+        overview:
+            "Teachers help students learn academic subjects and develop knowledge and skills.",
+        prerequisites: [
+            "Subject knowledge",
+            "Communication skills"
+        ],
+        skills: [
+            "Teaching",
+            "Communication",
+            "Lesson planning",
+            "Classroom management",
+            "Digital teaching"
+        ],
+        tools: [
+            "Google Classroom",
+            "Microsoft Teams",
+            "PowerPoint",
+            "Digital whiteboards"
+        ],
+        projects: [
+            "Online lesson",
+            "Teaching portfolio",
+            "Educational video",
+            "Student activity"
+        ],
+        internship:
+            "Gain teaching experience through schools, educational organizations or tutoring programs.",
+        careers: [
+            "Teacher",
+            "Tutor",
+            "Online Educator",
+            "Academic Coordinator"
+        ]
+    },
+
+
+    // ==================================================
+    // LAW
+    // ==================================================
+
+    "lawyer": {
+        category: "Law",
+        title: "Lawyer",
+        overview:
+            "Lawyers provide legal services and represent clients within the applicable legal framework.",
+        prerequisites: [
+            "Strong communication",
+            "Reading ability",
+            "Interest in law"
+        ],
+        skills: [
+            "Legal research",
+            "Legal writing",
+            "Case analysis",
+            "Communication",
+            "Negotiation"
+        ],
+        tools: [
+            "Legal databases",
+            "Document management software"
+        ],
+        projects: [
+            "Legal research paper",
+            "Case analysis",
+            "Moot court",
+            "Legal awareness project"
+        ],
+        internship:
+            "Gain experience through law firms, legal departments, courts or legal organizations as permitted.",
+        careers: [
+            "Lawyer",
+            "Legal Associate",
+            "Legal Consultant",
+            "Corporate Counsel"
+        ]
+    },
+
+
+    // ==================================================
+    // HOSPITALITY
+    // ==================================================
+
+    "chef": {
+        category: "Hospitality",
+        title: "Chef",
+        overview:
+            "Chefs plan, prepare and present food while managing kitchen operations and food safety.",
+        prerequisites: [
+            "Interest in cooking",
+            "Creativity",
+            "Food safety awareness"
+        ],
+        skills: [
+            "Cooking",
+            "Food preparation",
+            "Menu planning",
+            "Food safety",
+            "Kitchen management"
+        ],
+        tools: [
+            "Kitchen equipment",
+            "Recipe management tools"
+        ],
+        projects: [
+            "Personal recipe portfolio",
+            "Menu design",
+            "Food presentation project"
+        ],
+        internship:
+            "Gain practical experience through restaurants, hotels, catering companies or culinary programs.",
+        careers: [
+            "Chef",
+            "Sous Chef",
+            "Pastry Chef",
+            "Culinary Specialist"
+        ]
+    },
+
+
+    // ==================================================
+    // AVIATION
+    // ==================================================
+
+    "pilot": {
+        category: "Aviation",
+        title: "Pilot",
+        overview:
+            "Pilots operate aircraft after completing the applicable training, examinations and licensing requirements.",
+        prerequisites: [
+            "Physics",
+            "Mathematics",
+            "Medical eligibility",
+            "Required aviation training"
+        ],
+        skills: [
+            "Flight operations",
+            "Navigation",
+            "Communication",
+            "Decision making",
+            "Aviation safety"
+        ],
+        tools: [
+            "Flight simulator",
+            "Navigation systems",
+            "Aircraft instruments"
+        ],
+        projects: [
+            "Flight planning exercises",
+            "Aviation research",
+            "Simulator training"
+        ],
+        internship:
+            "Follow the applicable aviation authority's training and licensing requirements.",
+        careers: [
+            "Commercial Pilot",
+            "Flight Instructor",
+            "Airline Pilot",
+            "Charter Pilot"
+        ]
+    },
+
+
+    // ==================================================
+    // SPORTS & FITNESS
+    // ==================================================
+
+    "fitness trainer": {
+        category: "Sports & Fitness",
+        title: "Fitness Trainer",
+        overview:
+            "Fitness Trainers help clients develop exercise routines and healthy fitness habits within their professional scope.",
+        prerequisites: [
+            "Interest in fitness",
+            "Basic anatomy knowledge"
+        ],
+        skills: [
+            "Exercise programming",
+            "Basic anatomy",
+            "Communication",
+            "Fitness assessment"
+        ],
+        tools: [
+            "Fitness tracking apps",
+            "Heart-rate monitors",
+            "Gym equipment"
+        ],
+        projects: [
+            "Workout plan",
+            "Fitness portfolio",
+            "Exercise education content"
+        ],
+        internship:
+            "Gain supervised practical experience and pursue appropriate fitness certifications.",
+        careers: [
+            "Fitness Trainer",
+            "Personal Trainer",
+            "Fitness Coach",
+            "Strength Coach"
+        ]
+    },
+
+
+    // ==================================================
+    // MUSIC
+    // ==================================================
+
+    "musician": {
+        category: "Music",
+        title: "Musician",
+        overview:
+            "Musicians perform, compose, arrange or produce music across live and digital environments.",
+        prerequisites: [
+            "Interest in music",
+            "Practice discipline"
+        ],
+        skills: [
+            "Instrument or vocal skills",
+            "Music theory",
+            "Performance",
+            "Composition",
+            "Music production"
+        ],
+        tools: [
+            "DAW",
+            "Microphone",
+            "Audio interface",
+            "Musical instruments"
+        ],
+        projects: [
+            "Original song",
+            "Music cover",
+            "Live performance",
+            "Music production project"
+        ],
+        internship:
+            "Build a portfolio through performances, recordings and collaborations.",
+        careers: [
+            "Musician",
+            "Singer",
+            "Composer",
+            "Music Producer",
+            "Session Artist"
+        ]
     }
-
 };
 
-// ====================================
-// GENERIC ROADMAP GENERATOR
-// ====================================
 
-function createGenericRoadmap(course) {
+// ======================================================
+// SEARCH ALIASES
+// ======================================================
+
+const aliases = {
+
+    // Technology
+    "web developer": "full stack developer",
+    "web development": "full stack developer",
+    "software developer": "full stack developer",
+    "software development": "full stack developer",
+    "react developer": "frontend developer",
+    "frontend": "frontend developer",
+    "front end": "frontend developer",
+    "backend": "backend developer",
+    "back end": "backend developer",
+    "app developer": "mobile app developer",
+    "android developer": "mobile app developer",
+    "python": "python developer",
+
+    // AI
+    "ai": "artificial intelligence engineer",
+    "artificial intelligence": "artificial intelligence engineer",
+    "ai engineer": "artificial intelligence engineer",
+    "machine learning": "machine learning engineer",
+    "ml": "machine learning engineer",
+    "data science": "data scientist",
+    "data scientist": "data scientist",
+    "data analytics": "data analyst",
+    "data analysis": "data analyst",
+
+    // Cybersecurity
+    "cyber security": "cybersecurity analyst",
+    "cybersecurity": "cybersecurity analyst",
+    "cyber security analyst": "cybersecurity analyst",
+    "ethical hacking": "ethical hacker",
+    "hacking": "ethical hacker",
+    "penetration testing": "ethical hacker",
+    "pentesting": "ethical hacker",
+    "cloud security": "cloud security engineer",
+
+    // Design
+    "ui ux": "ui/ux designer",
+    "ui/ux": "ui/ux designer",
+    "ui ux designer": "ui/ux designer",
+    "ux": "ui/ux designer",
+    "ui": "ui/ux designer",
+    "graphic design": "graphic designer",
+    "animation": "animator",
+    "3d animation": "animator",
+    "motion graphics": "animator",
+
+    // Writing / media
+    "writing": "content writer",
+    "writer": "content writer",
+    "content writing": "content writer",
+    "copywriting": "content writer",
+    "seo writing": "content writer",
+    "journalism": "journalist",
+    "news": "journalist",
+    "acting": "actor",
+    "film acting": "actor",
+    "cinema": "actor",
+    "photography": "photographer",
+    "photographer": "photographer",
+
+    // Business
+    "business analysis": "business analyst",
+    "business analyst": "business analyst",
+    "digital marketing": "digital marketing specialist",
+    "marketing": "digital marketing specialist",
+    "seo": "digital marketing specialist",
+    "social media marketing": "digital marketing specialist",
+
+    // Finance
+    "accounting": "accountant",
+    "accounts": "accountant",
+    "finance": "financial analyst",
+    "financial analysis": "financial analyst",
+    "ca": "chartered accountant",
+    "chartered accountancy": "chartered accountant",
+
+    // Engineering
+    "mechanical": "mechanical engineer",
+    "mechanical engineering": "mechanical engineer",
+    "civil": "civil engineer",
+    "civil engineering": "civil engineer",
+    "electrical": "electrical engineer",
+    "electrical engineering": "electrical engineer",
+    "electronics": "electronics engineer",
+    "electronics engineering": "electronics engineer",
+
+    // Healthcare
+    "medicine": "doctor",
+    "medical": "doctor",
+    "mbbs": "doctor",
+    "pharmacy": "pharmacist",
+    "pharmacist": "pharmacist",
+
+    // Education
+    "teaching": "teacher",
+    "teacher": "teacher",
+    "teaching career": "teacher",
+
+    // Law
+    "law": "lawyer",
+    "legal": "lawyer",
+    "lawyer": "lawyer",
+
+    // Hospitality
+    "cooking": "chef",
+    "cook": "chef",
+    "chef": "chef",
+    "culinary": "chef",
+
+    // Aviation
+    "aviation": "pilot",
+    "pilot": "pilot",
+    "piloting": "pilot",
+
+    // Fitness
+    "fitness": "fitness trainer",
+    "gym trainer": "fitness trainer",
+    "personal trainer": "fitness trainer",
+    "sports fitness": "fitness trainer",
+
+    // Music
+    "music": "musician",
+    "singing": "musician",
+    "singer": "musician",
+    "musician": "musician"
+};
+
+
+// ======================================================
+// FIND CAREER
+// ======================================================
+
+function findCareer(course) {
+
+    const original = String(course || "").trim();
+
+    if (!original) {
+        return null;
+    }
+
+    const normalized = original
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+
+    // Exact profile
+    if (careerProfiles[normalized]) {
+        return careerProfiles[normalized];
+    }
+
+    // Alias
+    if (aliases[normalized]) {
+        return careerProfiles[aliases[normalized]];
+    }
+
+    // Partial matching
+    for (const key of Object.keys(careerProfiles)) {
+        if (
+            normalized.includes(key) ||
+            key.includes(normalized)
+        ) {
+            return careerProfiles[key];
+        }
+    }
+
+    // Partial alias matching
+    for (const alias of Object.keys(aliases)) {
+        if (
+            normalized.includes(alias) ||
+            alias.includes(normalized)
+        ) {
+            return careerProfiles[aliases[alias]];
+        }
+    }
+
+    return null;
+}
+
+
+// ======================================================
+// GENERIC CAREER GENERATOR
+// ======================================================
+
+function createGenericCareer(course) {
+
+    const title = String(course)
+        .trim()
+        .replace(/\b\w/g, letter => letter.toUpperCase());
 
     return {
-
-        title:
-            `${course} Roadmap`,
+        category: "Other",
+        title: title,
 
         overview:
-            `This roadmap provides a structured path for learning ${course} from beginner level toward practical projects, internships and entry-level opportunities.`,
+            `${title} is a career path that can be explored through education, practical learning, projects, internships and industry experience.`,
 
         prerequisites: [
-            "Basic computer knowledge",
-            "Logical thinking",
-            "Willingness to practice",
-            "Basic communication skills"
+            "Basic knowledge of the subject",
+            "Interest in the field",
+            "Communication skills",
+            "Willingness to learn"
         ],
 
-        stages: [
-
-            {
-                number: 1,
-
-                title:
-                    `${course} Fundamentals`,
-
-                duration:
-                    "2-4 weeks",
-
-                description:
-                    `Start by learning the fundamental concepts of ${course}.`,
-
-                skills: [
-                    `${course} Basics`,
-                    "Core Concepts",
-                    "Problem Solving",
-                    "Terminology"
-                ],
-
-                tools: [
-                    "VS Code",
-                    "Git",
-                    "GitHub"
-                ],
-
-                projects: [
-                    {
-                        title:
-                            `Beginner ${course} Project`,
-
-                        description:
-                            `Build a small project to practice the basic concepts of ${course}.`
-                    }
-                ]
-            },
-
-            {
-                number: 2,
-
-                title:
-                    "Intermediate Skills",
-
-                duration:
-                    "3-5 weeks",
-
-                description:
-                    "Move from basic concepts into practical and intermediate skills.",
-
-                skills: [
-                    "Problem Solving",
-                    "Practical Implementation",
-                    "Debugging",
-                    "Project Structure"
-                ],
-
-                tools: [
-                    "VS Code",
-                    "GitHub"
-                ],
-
-                projects: [
-                    {
-                        title:
-                            `Intermediate ${course} Project`,
-
-                        description:
-                            `Create a practical application related to ${course}.`
-                    }
-                ]
-            },
-
-            {
-                number: 3,
-
-                title:
-                    "Advanced Concepts",
-
-                duration:
-                    "4-6 weeks",
-
-                description:
-                    `Learn advanced concepts that are commonly used in ${course} careers.`,
-
-                skills: [
-                    "Advanced Concepts",
-                    "Best Practices",
-                    "System Thinking",
-                    "Performance"
-                ],
-
-                tools: [
-                    "GitHub",
-                    "Documentation Tools"
-                ],
-
-                projects: [
-                    {
-                        title:
-                            `Advanced ${course} Project`,
-
-                        description:
-                            `Build a larger project demonstrating practical ${course} skills.`
-                    }
-                ]
-            },
-
-            {
-                number: 4,
-
-                title:
-                    "Real-World Projects",
-
-                duration:
-                    "4-6 weeks",
-
-                description:
-                    "Build projects that demonstrate your ability to solve real problems.",
-
-                skills: [
-                    "Project Planning",
-                    "Problem Solving",
-                    "Testing",
-                    "Documentation"
-                ],
-
-                tools: [
-                    "GitHub",
-                    "VS Code"
-                ],
-
-                projects: [
-                    {
-                        title:
-                            `Real-World ${course} Application`,
-
-                        description:
-                            `Create a portfolio-level project based on a real student or business problem.`
-                    }
-                ]
-            },
-
-            {
-                number: 5,
-
-                title:
-                    "Portfolio and Internship Preparation",
-
-                duration:
-                    "3-4 weeks",
-
-                description:
-                    "Prepare your portfolio, resume and interview skills.",
-
-                skills: [
-                    "Resume Building",
-                    "GitHub Portfolio",
-                    "Communication",
-                    "Interview Preparation"
-                ],
-
-                tools: [
-                    "GitHub",
-                    "LinkedIn"
-                ],
-
-                projects: [
-                    {
-                        title:
-                            "Portfolio Website",
-
-                        description:
-                            "Create a portfolio website showing your projects and skills."
-                    }
-                ]
-            },
-
-            {
-                number: 6,
-
-                title:
-                    "Job Readiness",
-
-                duration:
-                    "2-4 weeks",
-
-                description:
-                    "Prepare for internships, placements and entry-level opportunities.",
-
-                skills: [
-                    "Technical Interview",
-                    "Aptitude",
-                    "Problem Solving",
-                    "Resume Optimization"
-                ],
-
-                tools: [
-                    "GitHub",
-                    "LinkedIn"
-                ],
-
-                projects: [
-                    {
-                        title:
-                            "Final Capstone Project",
-
-                        description:
-                            `Build one complete project that demonstrates your ${course} knowledge.`
-                    }
-                ]
-            }
-
+        skills: [
+            `${title} fundamentals`,
+            "Communication",
+            "Problem solving",
+            "Research",
+            "Digital skills",
+            "Professional skills"
         ],
 
-        internshipPreparation: [
-            "Build at least 2-3 projects",
-            "Create and maintain a GitHub profile",
-            "Prepare a one-page resume",
-            "Create a LinkedIn profile",
-            "Practice interview questions",
-            `Search for ${course} internships`,
-            "Apply consistently"
+        tools: [
+            "VS Code or suitable learning tools",
+            "Google",
+            "GitHub",
+            "Microsoft Office / Google Workspace"
         ],
 
-        careerOptions: [
-            `${course} Intern`,
-            `Junior ${course} Professional`,
-            `${course} Associate`,
-            `${course} Developer`,
-            `${course} Analyst`
+        projects: [
+            `Beginner ${title} project`,
+            `Intermediate ${title} project`,
+            `Portfolio project`
         ],
 
-        importantNote:
-            "The fastest way to improve is to combine learning with projects and consistent practice."
+        internship:
+            `Look for internships, volunteering, projects and entry-level opportunities related to ${title}. Build a portfolio and document your practical work.`,
+
+        careers: [
+            title,
+            `${title} Specialist`,
+            `${title} Associate`,
+            `${title} Consultant`
+        ]
     };
 }
 
-// ====================================
-// FIND ROADMAP
-// ====================================
 
-function getRoadmap(course) {
+// ======================================================
+// BUILD ROADMAP
+// ======================================================
 
-    const normalized =
-        course
-            .toLowerCase()
-            .trim();
+function buildRoadmap(course) {
 
-    if (
-        normalized.includes("python")
-    ) {
-        return roadmapTemplates.python;
-    }
+    const profile = findCareer(course) || createGenericCareer(course);
 
-    if (
-        normalized.includes("cyber") ||
-        normalized.includes("ethical hacking") ||
-        normalized.includes("penetration testing") ||
-        normalized.includes("pentesting")
-    ) {
-        return roadmapTemplates.cybersecurity;
-    }
+    return {
 
-    return createGenericRoadmap(
-        course
-    );
+        title: profile.title,
+
+        category: profile.category,
+
+        overview: profile.overview,
+
+        prerequisites: profile.prerequisites,
+
+        stages: [
+
+            {
+                stage: 1,
+                title: "Foundation",
+                duration: "1-2 months",
+                skills: profile.prerequisites,
+                topics: [
+                    "Understand the fundamentals",
+                    "Learn important terminology",
+                    "Study basic concepts",
+                    "Practice regularly"
+                ]
+            },
+
+            {
+                stage: 2,
+                title: "Core Skills",
+                duration: "2-3 months",
+                skills: profile.skills,
+                topics: [
+                    "Learn the core skills",
+                    "Practice with examples",
+                    "Follow structured tutorials",
+                    "Solve practical problems"
+                ]
+            },
+
+            {
+                stage: 3,
+                title: "Tools & Practical Learning",
+                duration: "1-3 months",
+                skills: profile.tools,
+                topics: [
+                    "Learn industry tools",
+                    "Build small projects",
+                    "Practice real-world workflows",
+                    "Document your work"
+                ]
+            },
+
+            {
+                stage: 4,
+                title: "Projects & Portfolio",
+                duration: "1-3 months",
+                skills: [
+                    "Project development",
+                    "Problem solving",
+                    "Documentation",
+                    "Presentation"
+                ],
+                topics: profile.projects
+            },
+
+            {
+                stage: 5,
+                title: "Internship & Career Preparation",
+                duration: "Ongoing",
+                skills: [
+                    "Resume building",
+                    "Portfolio development",
+                    "Interview preparation",
+                    "Communication",
+                    "Networking"
+                ],
+                topics: [
+                    profile.internship,
+                    "Create a professional resume",
+                    "Build a LinkedIn profile",
+                    "Maintain a GitHub or portfolio where relevant",
+                    "Apply for relevant internships",
+                    "Prepare for interviews"
+                ]
+            }
+        ],
+
+        internshipPreparation: profile.internship,
+
+        careerOptions: profile.careers,
+
+        importantNote:
+            "Career requirements vary by role, organization and location. Always verify professional qualifications, licensing requirements and current job requirements before applying."
+    };
 }
 
-// ====================================
-// FREE ROADMAP API
-// ====================================
 
-app.post(
-    "/api/generate-roadmap",
+// ======================================================
+// ROADMAP API
+// ======================================================
 
-    async (req, res) => {
+app.post("/api/generate-roadmap", (req, res) => {
 
-        try {
+    try {
 
-            const course =
-                String(
-                    req.body.course || ""
-                ).trim();
+        const { course } = req.body;
 
-            if (!course) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    error:
-                        "Please enter a course or career."
-
-                });
-            }
-
-            console.log(
-                "Generating free roadmap for:",
-                course
-            );
-
-            const roadmap =
-                getRoadmap(course);
-
-            res.json({
-
-                success: true,
-
-                roadmap
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "Roadmap generation error:",
-                error.message
-            );
-
-            res.status(500).json({
-
+        if (!course || !String(course).trim()) {
+            return res.status(400).json({
                 success: false,
-
-                error:
-                    "Unable to generate roadmap."
-
+                message: "Please enter a career or course."
             });
         }
+
+        const roadmap = buildRoadmap(course);
+
+        return res.json({
+            success: true,
+            roadmap: roadmap
+        });
+
+    } catch (error) {
+
+        console.error("Roadmap generation error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to generate roadmap."
+        });
     }
-);
+});
 
-// ====================================
-// START SERVER
-// ====================================
 
-const PORT =
-    process.env.PORT || 5000;
+// ======================================================
+// AVAILABLE CAREERS API
+// ======================================================
 
-app.listen(
-    PORT,
-"0.0.0.0",
-    () => {
+app.get("/api/careers", (req, res) => {
 
-        console.log(
-            `CareerPath backend running on port ${PORT}`
-        );
+    const careers = Object.values(careerProfiles).map(career => ({
+        title: career.title,
+        category: career.category
+    }));
 
-        console.log(
-            "Free roadmap generator is enabled."
-        );
-    }
-);
+    res.json({
+        success: true,
+        careers
+    });
+});
+
+
+// ======================================================
+// SERVER
+// ======================================================
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, "0.0.0.0", () => {
+
+    console.log(
+        `CareerPath backend running on port ${PORT}`
+    );
+
+    console.log(
+        "Career-aware roadmap generator is enabled."
+    );
+});
