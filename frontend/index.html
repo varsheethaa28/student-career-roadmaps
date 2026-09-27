@@ -8,11 +8,6 @@
     <title>CareerPath | Discover Your Career</title>
 
     <style>
-
-        /* =========================
-           GENERAL STYLES
-        ========================= */
-
         * {
             margin: 0;
             padding: 0;
@@ -35,10 +30,7 @@
             font-family: inherit;
         }
 
-
-        /* =========================
-           HEADER
-        ========================= */
+        /* HEADER */
 
         .header {
             height: 82px;
@@ -47,7 +39,6 @@
             align-items: center;
             justify-content: space-between;
             gap: 25px;
-
             background: white;
             border-bottom: 1px solid #f1e4e8;
         }
@@ -94,10 +85,7 @@
             white-space: nowrap;
         }
 
-
-        /* =========================
-           MAIN LAYOUT
-        ========================= */
+        /* MAIN */
 
         .main {
             width: 88%;
@@ -108,14 +96,10 @@
             grid-template-columns: 1.1fr 0.75fr;
             align-items: center;
             gap: 65px;
-
             padding: 55px 0;
         }
 
-
-        /* =========================
-           HERO SECTION
-        ========================= */
+        /* HERO */
 
         .hero {
             padding-top: 10px;
@@ -153,10 +137,7 @@
             margin-bottom: 30px;
         }
 
-
-        /* =========================
-           FEATURE CARDS
-        ========================= */
+        /* FEATURES */
 
         .features {
             display: grid;
@@ -180,20 +161,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-
             margin: 0 auto 10px;
-
             background: #ffe5eb;
             border-radius: 50%;
-
             color: #ef233c;
             font-size: 24px;
         }
 
-
-        /* =========================
-           CREATIVE ILLUSTRATION
-        ========================= */
+        /* ILLUSTRATION */
 
         .illustration {
             position: relative;
@@ -201,7 +176,6 @@
             max-width: 620px;
             min-height: 180px;
             margin: auto;
-
             display: flex;
             justify-content: center;
             align-items: center;
@@ -212,7 +186,6 @@
             width: 85%;
             height: 175px;
             bottom: 0;
-
             background: #ffd9e1;
             border-radius: 50% 50% 20px 20px;
         }
@@ -237,17 +210,13 @@
             transform: rotate(-4deg);
         }
 
-
-        /* =========================
-           LOGIN CARD
-        ========================= */
+        /* LOGIN CARD */
 
         .login-card {
             background: white;
             border: 1px solid #f1dfe4;
             border-radius: 25px;
             padding: 40px;
-
             box-shadow: 0 25px 65px rgba(180, 30, 65, 0.13);
         }
 
@@ -280,10 +249,7 @@
             margin-bottom: 27px;
         }
 
-
-        /* =========================
-           INPUTS
-        ========================= */
+        /* INPUTS */
 
         .input-group {
             margin-bottom: 17px;
@@ -292,10 +258,8 @@
         .input-group input {
             width: 100%;
             height: 56px;
-
             border: 1px solid #dfe4ec;
             border-radius: 12px;
-
             padding: 0 16px;
             font-size: 15px;
             outline: none;
@@ -306,24 +270,42 @@
             box-shadow: 0 0 0 3px #ef233c18;
         }
 
+        /* FORGOT PASSWORD */
 
-        /* =========================
-           LOGIN BUTTON
-        ========================= */
+        .forgot-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: -5px;
+            margin-bottom: 18px;
+        }
+
+        #forgotPassword {
+            background: none;
+            border: none;
+            outline: none;
+            padding: 0;
+            color: #d90429;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        #forgotPassword:hover {
+            text-decoration: underline;
+        }
+
+        /* LOGIN BUTTON */
 
         .login-button {
             width: 100%;
             height: 56px;
-
             border: none;
             border-radius: 12px;
-
             background: linear-gradient(90deg, #ef233c, #d90429);
             color: white;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-
             transition: 0.3s;
         }
 
@@ -332,16 +314,12 @@
             box-shadow: 0 10px 25px #ef233c35;
         }
 
-
-        /* =========================
-           DIVIDER
-        ========================= */
+        /* DIVIDER */
 
         .divider {
             display: flex;
             align-items: center;
             gap: 12px;
-
             margin: 22px 0;
             color: #8a94a6;
             font-size: 13px;
@@ -355,26 +333,19 @@
             background: #e5e8ee;
         }
 
-
-        /* =========================
-           GOOGLE BUTTON
-        ========================= */
+        /* GOOGLE BUTTON */
 
         .google-button {
             width: 100%;
             height: 55px;
-
             border: 1px solid #dfe4ec;
             border-radius: 12px;
             background: white;
             color: #26334b;
-
             font-size: 15px;
             font-weight: bold;
-
             cursor: pointer;
             transition: 0.3s;
-
             display: flex;
             align-items: center;
             justify-content: center;
@@ -386,10 +357,7 @@
             border-color: #c9cfda;
         }
 
-
-        /* =========================
-           REGISTER LINK
-        ========================= */
+        /* REGISTER */
 
         .register-text {
             text-align: center;
@@ -404,24 +372,17 @@
             margin-left: 5px;
         }
 
-
-        /* =========================
-           ERROR MESSAGE
-        ========================= */
+        /* MESSAGE */
 
         .message {
             min-height: 22px;
             margin-top: 15px;
-
             color: #d90429;
             font-size: 13px;
             line-height: 1.5;
         }
 
-
-        /* =========================
-           RESPONSIVE DESIGN
-        ========================= */
+        /* RESPONSIVE */
 
         @media (max-width: 1150px) {
 
@@ -458,9 +419,7 @@
                 max-width: 500px;
                 margin: auto;
             }
-
         }
-
 
         @media (max-width: 700px) {
 
@@ -511,20 +470,13 @@
             .login-card h2 {
                 font-size: 27px;
             }
-
         }
-
     </style>
-
 </head>
-
 
 <body>
 
-
-    <!-- =========================
-         HEADER
-    ========================= -->
+    <!-- HEADER -->
 
     <header class="header">
 
@@ -532,19 +484,23 @@
             <span class="logo-dark">Career</span><span class="logo-red">Path</span>
         </a>
 
-
         <nav class="navigation">
 
             <a href="index.html">Home</a>
 
-            <a href="../pages/roadmap.html">Roadmaps</a>
+            <a href="../pages/roadmap.html">
+                Roadmaps
+            </a>
 
-            <a href="../pages/dashboard.html">Saved Roadmaps</a>
+            <a href="../pages/dashboard.html">
+                Saved Roadmaps
+            </a>
 
-            <a href="#about">About</a>
+            <a href="#about">
+                About
+            </a>
 
         </nav>
-
 
         <div class="header-button">
             🎯 Your Future. Our Goal.
@@ -553,15 +509,11 @@
     </header>
 
 
-
-    <!-- =========================
-         MAIN CONTENT
-    ========================= -->
+    <!-- MAIN -->
 
     <main class="main">
 
-
-        <!-- HERO SECTION -->
+        <!-- HERO -->
 
         <section class="hero">
 
@@ -569,27 +521,21 @@
                 ✦ Plan &nbsp; ★ Learn &nbsp; ★ Grow
             </div>
 
-
             <h1>
                 Discover Your
                 <span>Career Path</span>
             </h1>
 
-
             <p class="hero-description">
-
                 Explore career roadmaps, learn essential skills,
                 discover courses, and find internship opportunities
                 to build your future with confidence.
-
             </p>
-
 
 
             <!-- FEATURES -->
 
             <div class="features">
-
 
                 <div class="feature">
 
@@ -601,7 +547,6 @@
                     Roadmaps
 
                 </div>
-
 
 
                 <div class="feature">
@@ -628,7 +573,6 @@
                 </div>
 
 
-
                 <div class="feature">
 
                     <div class="feature-icon">
@@ -640,11 +584,10 @@
 
                 </div>
 
-
             </div>
 
 
-            <!-- CREATIVE ILLUSTRATION -->
+            <!-- ILLUSTRATION -->
 
             <div class="illustration">
 
@@ -665,35 +608,26 @@
 
             </div>
 
-
         </section>
 
 
-
-        <!-- LOGIN SECTION -->
+        <!-- LOGIN -->
 
         <section class="login-card">
-
 
             <div class="welcome">
                 👋 Welcome Back
             </div>
 
-
             <div class="red-line"></div>
-
 
             <h2>
                 Login to Your Account
             </h2>
 
-
             <p class="login-description">
-
                 Continue your journey towards a better future.
-
             </p>
-
 
 
             <!-- LOGIN FORM -->
@@ -713,7 +647,6 @@
                 </div>
 
 
-
                 <div class="input-group">
 
                     <input
@@ -727,19 +660,30 @@
                 </div>
 
 
+                <!-- FORGOT PASSWORD -->
+
+                <div class="forgot-container">
+
+                    <button
+                        type="button"
+                        id="forgotPassword"
+                    >
+                        Forgot Password?
+                    </button>
+
+                </div>
+
+
+                <!-- LOGIN -->
 
                 <button
                     type="submit"
                     class="login-button"
                 >
-
                     Login →
-
                 </button>
 
-
             </form>
-
 
 
             <!-- DIVIDER -->
@@ -747,7 +691,6 @@
             <div class="divider">
                 OR
             </div>
-
 
 
             <!-- GOOGLE LOGIN -->
@@ -758,7 +701,6 @@
                 class="google-button"
             >
 
-                <!-- Official-style Google G logo -->
                 <svg
                     width="20"
                     height="20"
@@ -793,7 +735,6 @@
             </button>
 
 
-
             <!-- REGISTER -->
 
             <p class="register-text">
@@ -807,7 +748,6 @@
             </p>
 
 
-
             <!-- MESSAGE -->
 
             <p
@@ -816,17 +756,12 @@
                 role="alert"
             ></p>
 
-
         </section>
-
 
     </main>
 
 
-
-    <!-- =========================
-         FIREBASE LOGIN
-    ========================= -->
+    <!-- FIREBASE -->
 
     <script type="module">
 
@@ -838,9 +773,9 @@
 
         import {
             signInWithEmailAndPassword,
-            signInWithPopup
+            signInWithPopup,
+            sendPasswordResetEmail
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
 
 
         const loginForm =
@@ -851,99 +786,225 @@
             document.getElementById("googleLoginButton");
 
 
+        const forgotPassword =
+            document.getElementById("forgotPassword");
+
+
+        const emailInput =
+            document.getElementById("email");
+
+
         const message =
             document.getElementById("message");
 
 
-
-        function showMessage(text) {
+        function showMessage(text, type = "") {
 
             message.textContent = text;
+
+            if (type === "success") {
+                message.style.color = "#16803c";
+            } else {
+                message.style.color = "#d90429";
+            }
 
         }
 
 
-
         // EMAIL AND PASSWORD LOGIN
 
-        loginForm.addEventListener("submit", async (event) => {
+        loginForm.addEventListener(
+            "submit",
+            async (event) => {
 
-            event.preventDefault();
+                event.preventDefault();
 
+                const email =
+                    emailInput.value.trim();
 
-            const email =
-                document.getElementById("email").value.trim();
-
-
-            const password =
-                document.getElementById("password").value;
-
-
-            showMessage("Logging in...");
+                const password =
+                    document.getElementById("password").value;
 
 
-            try {
-
-                await signInWithEmailAndPassword(
-                    auth,
-                    email,
-                    password
-                );
+                showMessage("Logging in...");
 
 
-                window.location.href =
-                    "../pages/dashboard.html";
+                try {
+
+                    await signInWithEmailAndPassword(
+                        auth,
+                        email,
+                        password
+                    );
 
 
-            } catch (error) {
+                    window.location.href =
+                        "../pages/dashboard.html";
 
-                console.error("Login error:", error);
 
-                showMessage(
-                    "Login failed. Please check your email and password."
-                );
+                } catch (error) {
+
+                    console.error(
+                        "Login error:",
+                        error
+                    );
+
+                    showMessage(
+                        "Login failed. Please check your email and password."
+                    );
+
+                }
 
             }
+        );
 
-        });
 
+        // FORGOT PASSWORD
+
+        forgotPassword.addEventListener(
+            "click",
+            async () => {
+
+                const email =
+                    emailInput.value.trim();
+
+
+                if (!email) {
+
+                    showMessage(
+                        "Please enter your email address first."
+                    );
+
+                    emailInput.focus();
+
+                    return;
+                }
+
+
+                if (
+                    !email.includes("@") ||
+                    !email.includes(".")
+                ) {
+
+                    showMessage(
+                        "Please enter a valid email address."
+                    );
+
+                    emailInput.focus();
+
+                    return;
+                }
+
+
+                showMessage(
+                    "Sending password reset email..."
+                );
+
+
+                try {
+
+                    await sendPasswordResetEmail(
+                        auth,
+                        email
+                    );
+
+
+                    showMessage(
+                        "Password reset email sent! Check your inbox or spam folder.",
+                        "success"
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Password reset error:",
+                        error
+                    );
+
+
+                    if (
+                        error.code ===
+                        "auth/user-not-found"
+                    ) {
+
+                        showMessage(
+                            "No account was found with this email."
+                        );
+
+                    } else if (
+                        error.code ===
+                        "auth/invalid-email"
+                    ) {
+
+                        showMessage(
+                            "Please enter a valid email address."
+                        );
+
+                    } else if (
+                        error.code ===
+                        "auth/too-many-requests"
+                    ) {
+
+                        showMessage(
+                            "Too many attempts. Please try again later."
+                        );
+
+                    } else {
+
+                        showMessage(
+                            "Unable to send reset email. Please try again."
+                        );
+
+                    }
+
+                }
+
+            }
+        );
 
 
         // GOOGLE LOGIN
 
-        googleLoginButton.addEventListener("click", async () => {
-
-            showMessage("Opening Google login...");
-
-
-            try {
-
-                await signInWithPopup(
-                    auth,
-                    googleProvider
-                );
-
-
-                window.location.href =
-                    "../pages/dashboard.html";
-
-
-            } catch (error) {
-
-                console.error("Google login error:", error);
-
+        googleLoginButton.addEventListener(
+            "click",
+            async () => {
 
                 showMessage(
-                    "Google login failed. Please try again."
+                    "Opening Google login..."
                 );
 
+
+                try {
+
+                    await signInWithPopup(
+                        auth,
+                        googleProvider
+                    );
+
+
+                    window.location.href =
+                        "../pages/dashboard.html";
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Google login error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        "Google login failed. Please try again."
+                    );
+
+                }
+
             }
-
-        });
-
+        );
 
     </script>
-
 
 </body>
 
