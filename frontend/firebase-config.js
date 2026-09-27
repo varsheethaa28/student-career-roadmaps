@@ -41,6 +41,7 @@ const googleProvider = new GoogleAuthProvider();
 
 // Export Firebase services
 export {
+    app,
     auth,
     googleProvider,
     db
